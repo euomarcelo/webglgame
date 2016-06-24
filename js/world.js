@@ -7,7 +7,7 @@ var World = Class.extend({
             groundCubeSize = 100,
             groundCube = new THREE.CubeGeometry( groundCubeSize, waterLevel, groundCubeSize ),
             obstacles = [
-                new THREE.CubeGeometry(64, 64, 64)
+                new THREE.BoxGeometry(64, 64, 64)
             ],
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args),
@@ -87,7 +87,7 @@ var World = Class.extend({
             this.obstacles.push(new THREE.Mesh(obstacles[i], material));
             this.mesh.add(this.obstacles[i]);
         }
-        this.obstacles[0].position.set(0, 32, 128);
+        this.obstacles[0].position.set(0, 0, 128);
 
 
     },

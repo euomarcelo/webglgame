@@ -13,6 +13,7 @@ var BasicScene = Class.extend({
         this.renderer = new THREE.WebGLRenderer();
         // Define the container for the renderer
         this.container = jQuery('#basic-scene');
+        this.keyAllowed = {37: true, 39: true};
 
         // Create the "world" : a 3D representation of the place we'll be putting our character in
         this.world = new World({
@@ -36,6 +37,7 @@ var BasicScene = Class.extend({
     // Event handlers
     setControls: function () {
         'use strict';
+        var self = this;
         // Within jQuery's methods, we won't be able to access "this"
         var user = this.user,
         // State of the different controls
@@ -56,12 +58,16 @@ var BasicScene = Class.extend({
             // Update the state of the attached control to "true"
             switch (e.keyCode) {
                 case 37:
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
                     controls.left = true;
                     break;
                 case 38:
                     controls.up = true;
                     break;
                 case 39:
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
                     controls.right = true;
                     break;
                 case 40:
@@ -100,12 +106,14 @@ var BasicScene = Class.extend({
             // Update the state of the attached control to "false"
             switch (e.keyCode) {
                 case 37:
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
                     controls.left = false;
                     break;
                 case 38:
                     controls.up = false;
                     break;
                 case 39:
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
                     controls.right = false;
                     break;
                 case 40:

@@ -60,8 +60,12 @@ var Character = Class.extend({
             new THREE.Vector3(-1, 0, 0),
             new THREE.Vector3(-1, 0, 1)
         ];
+
         // And the "RayCaster", able to test for intersections
+        this.lookDirection = new THREE.Vector3(0, 0, 1);
+        this.rotationDifference = 0;
         this.caster = new THREE.Raycaster();
+        this.caster2 = new THREE.Raycaster();
 
     },
     // Update the direction of the current motion
@@ -74,6 +78,34 @@ var Character = Class.extend({
             space = controls.space;
         this.direction.set(x, y, z);
         this.crushStone(space);
+        if(this.direction.x < 0){ // clockwise
+            if(this.lookDirection.x == 0 && this.lookDirection.z == 1){
+                this.lookDirection.set(-1,0,0);
+            }
+            else if(this.lookDirection.x == -1 && this.lookDirection.z == 0){
+                this.lookDirection.set(0,0,-1);
+            }
+            else if(this.lookDirection.x == 0 && this.lookDirection.z == -1){
+                this.lookDirection.set(1,0,0);
+            }
+            else if(this.lookDirection.x == 1 && this.lookDirection.z == 0){
+                this.lookDirection.set(0,0,1);
+            }
+        }
+        else if(this.direction.x > 0){ // counter-clockwise
+            if(this.lookDirection.x == 0 && this.lookDirection.z == 1){
+                this.lookDirection.set(1,0,0);
+            }
+            else if(this.lookDirection.x == -1 && this.lookDirection.z == 0){
+                this.lookDirection.set(0,0,1);
+            }
+            else if(this.lookDirection.x == 0 && this.lookDirection.z == -1){
+                this.lookDirection.set(-1,0,0);
+            }
+            else if(this.lookDirection.x == 1 && this.lookDirection.z == 0){
+                this.lookDirection.set(0,0,-1);
+            }
+        }
     },
     // Process the character motions
     motion: function () {
@@ -83,13 +115,15 @@ var Character = Class.extend({
         this.collision();
 
         // If we're not static
-        if (this.direction.x !== 0 || this.direction.z !== 0) {
-            // Rotate the character
-            this.rotate();
+        if (this.direction.z !== 0) {
             // Move the character
             this.move();
-            return true;
         }
+        if(this.direction.x !== 0){
+            // Rotate the character
+            this.rotate();
+        }
+        return true;
     },
     crushStone: function (space){
         'use strict';
@@ -107,8 +141,8 @@ var Character = Class.extend({
         // Get the obstacles array from our world
              ground = basicScene.world.getGround();
 
-        this.caster.set(this.mesh.position, new THREE.Vector3(0, -1, 0));
-        collisions = this.caster.intersectObjects(ground);
+        this.caster2.set(this.mesh.position, new THREE.Vector3(0, -1, 0));
+        collisions = this.caster2.intersectObjects(ground);
 
         if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > 64)){
             this.fall();
@@ -126,27 +160,43 @@ var Character = Class.extend({
             distance = 32,
         // Get the obstacles array from our world
             obstacles = basicScene.world.getObstacles();
-        // For each ray
-        for (i = 0; i < this.rays.length; i += 1) {
+
+        var direction = this.getDirectionThatIsFacing();
+        if(direction == "N"){
+            var raysFront =  [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
+            var raysBack =  [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1)];
+        }
+        else if(direction == "S"){
+            var raysFront = [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
+            var raysBack = [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1)];
+        }
+        else if(direction == "E"){
+            var raysFront = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
+            var raysBack = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1)];
+        }
+        else if(direction == "W"){
+            var raysFront = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
+            var raysBack = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1)];
+        }
+
+        for (i = 0; i < raysFront.length; i += 1) {
             // We reset the raycaster to this direction
-            this.caster.set(this.mesh.position, this.rays[i]);
+            this.caster.set(this.mesh.position, raysFront[i]);
             // Test if we intersect with any obstacle mesh
             collisions = this.caster.intersectObjects(obstacles);
             // And disable that direction if we do
-            if (collisions.length > 0 && collisions[0].distance <= distance) {
-                // Yep, this.rays[i] gives us : 0 => up, 1 => up-left, 2 => left, ...
-                if ((i === 0 || i === 1 || i === 7) && this.direction.z === 1) {
-                    this.direction.setZ(0);
-                }
-                else if ((i === 3 || i === 4 || i === 5) && this.direction.z === -1) {
-                    this.direction.setZ(0);
-                }
-                if ((i === 1 || i === 2 || i === 3) && this.direction.x === 1) {
-                    this.direction.setX(0);
-                }
-                else if ((i === 5 || i === 6 || i === 7) && this.direction.x === -1) {
-                    this.direction.setX(0);
-                }
+            if (collisions.length > 0 && collisions[0].distance <= distance && this.direction.z == 1) {
+                this.direction.z = 0;
+            }
+        }
+        for (i = 0; i < raysBack.length; i += 1) {
+            // We reset the raycaster to this direction
+            this.caster.set(this.mesh.position, raysBack[i]);
+            // Test if we intersect with any obstacle mesh
+            collisions = this.caster.intersectObjects(obstacles);
+            // And disable that direction if we do
+            if (collisions.length > 0 && collisions[0].distance <= distance && this.direction.z == -1) {
+                this.direction.z = 0;
             }
         }
     },
@@ -154,8 +204,10 @@ var Character = Class.extend({
     rotate: function () {
         'use strict';
         // Set the direction's angle, and the difference between it and our Object3D's current rotation
-        var angle = Math.atan2(this.direction.x, this.direction.z),
+        var angle = Math.atan2(this.lookDirection.x, this.lookDirection.z),
             difference = angle - this.mesh.rotation.y;
+        // console.log("mesh rotation:", this.mesh.rotation.y);
+        // console.log("angle:", angle);
         // If we're doing more than a 180°
         if (Math.abs(difference) > Math.PI) {
             // We proceed to a direct 360° rotation in the opposite way
@@ -164,17 +216,26 @@ var Character = Class.extend({
             difference = angle - this.mesh.rotation.y;
             // In short : we make sure not to turn "left" to go "right"
         }
+
         // Now if we haven't reach our target angle
         if (difference !== 0) {
             // We slightly get closer to it
             this.mesh.rotation.y += difference / 4;
+
         }
     },
     move: function () {
         'use strict';
         // We update our Object3D's position from our "direction"
-        this.mesh.position.x += this.direction.x * ((this.direction.z === 0) ? 4 : Math.sqrt(8));
-        this.mesh.position.z += this.direction.z * ((this.direction.x === 0) ? 4 : Math.sqrt(8));
+        if(this.lookDirection.x != 0){
+            this.mesh.position.x += this.lookDirection.x * 4 * this.direction.z;
+        }
+        else if(this.lookDirection.z != 0){
+            this.mesh.position.z += this.lookDirection.z * 4 * this.direction.z;
+        }
+        // this.mesh.position.x += this.direction.x * ((this.direction.z === 0) ? 4 : Math.sqrt(8));
+        // this.mesh.position.z += this.direction.z * ((this.direction.x === 0) ? 4 : Math.sqrt(8));
+
         // Now some trigonometry, using our "step" property ...
         this.step += 1 / 4;
         // ... to slightly move our feet and hands
@@ -193,7 +254,6 @@ var Character = Class.extend({
     getTypeOfCubeImOver: function(){
        'use strict';
        var indexIJ = this.getCubeposition();
-       console.log(indexIJ);
        var cubeCode = basicScene.world.level[indexIJ.i][indexIJ.j];
        if(cubeCode == 1) { return("ground"); }
        else if (cubeCode == 2) { return("hole");}
@@ -209,5 +269,11 @@ var Character = Class.extend({
     fall: function(){
         'use strict';
         this.mesh.position.y += -10;
-    }
+    },
+    getDirectionThatIsFacing: function(){
+        if(this.lookDirection.x == 0 && this.lookDirection.z == 1) return "N";
+        else if(this.lookDirection.x == -1 && this.lookDirection.z == 0) return "E";
+        else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
+        else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
+    },
 });
