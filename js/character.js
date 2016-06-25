@@ -74,10 +74,9 @@ var Character = Class.extend({
         // Either left or right, and either up or down (no jump or dive (on the Y axis), so far ...)
         var x = controls.left ? 1 : controls.right ? -1 : 0,
             y = 0,
-            z = controls.up ? 1 : controls.down ? -1 : 0,
-            space = controls.space;
+            z = controls.up ? 1 : controls.down ? -1 : 0;
         this.direction.set(x, y, z);
-        this.crushStone(space);
+
         if(this.direction.x < 0){ // clockwise
             if(this.lookDirection.x == 0 && this.lookDirection.z == 1){
                 this.lookDirection.set(-1,0,0);
@@ -125,26 +124,74 @@ var Character = Class.extend({
         }
         return true;
     },
-    crushStone: function (space){
+    crushStone: function (controls){
         'use strict';
+        var space = controls.space;
         // var space = controls.space ? true : false;
         // console.log("space:", space);
-        if(space && (this.isOverAHole())){
-            console.log(space);
+        if(space){
+            var posToDig = this.canDigHere();
+
+            if(posToDig !== null){
+                var cube = basicScene.world.floorCubes[posToDig.i][posToDig.j];
+                basicScene.world.level[posToDig.i][posToDig.j] = 3;
+                // TODO CHECK FOR EARTHQUAKES!
+                cube.material = basicScene.world.rachMaterial;
+                // cube.material.needsUpdate = true;
+            }
         }
+    },
+    canDigHere: function(){
+        var directionImFacing = this.getDirectionThatIsFacing(); // N S W E
+        var cubeImOver = this.getCubeposition(); // {i, j}
+        var x1, y1, x2, y2, x3, y3;
+        
+        // 1st and 2nd cube in front indexes
+        if(directionImFacing == "N"){
+            x1 = cubeImOver.i + 1; y1 = cubeImOver.j;
+            x2 = cubeImOver.i + 2; y2 = cubeImOver.j;
+            x3 = cubeImOver.i + 3; y3 = cubeImOver.j;
+        }
+        else if(directionImFacing == "S"){
+            x1 = cubeImOver.i - 1; y1 = cubeImOver.j;
+            x2 = cubeImOver.i - 2; y2 = cubeImOver.j;
+            x3 = cubeImOver.i - 3; y3 = cubeImOver.j;
+        }
+        else if(directionImFacing == "E"){
+            x1 = cubeImOver.i; y1 = cubeImOver.j - 1
+            x2 = cubeImOver.i; y2 = (cubeImOver.j - 2);
+            x3 = cubeImOver.i; y3 = (cubeImOver.j - 3);
+        }
+        else if(directionImFacing == "W"){
+            x1 = cubeImOver.i; y1 = cubeImOver.j + 1;
+            x2 = cubeImOver.i; y2 = (cubeImOver.j + 2);
+            x3 = cubeImOver.i; y3 = (cubeImOver.j + 3);
+        }
+        var cube1stInFront = {i: x1, j: y1}, cube2ndInFront = {i: x2, j: y2}, cube3rdInFront = {i: x3, j: y3};
+        var cube1stType = basicScene.world.getGroundType(cube1stInFront.i, cube1stInFront.j);
+        var cube2ndType = basicScene.world.getGroundType(cube2ndInFront.i, cube2ndInFront.j) ;
+        var cube3rdType = basicScene.world.getGroundType(cube3rdInFront.i, cube3rdInFront.j) ;
+
+        if(this.isOverAHole() && cube1stType == "ground" &&
+            ((cube2ndType == "rachadura" || cube2ndType == "water" || cube2ndType == "hole")
+             || cube3rdType == "hole")
+        ){
+            return cube1stInFront;
+        }
+        else return null;
     },
     fallingOnWater: function(){
         'use strict';
         var collisions,
         // Maximum distance from the origin before we consider collision
-             distance = 32,
+             distance = 64,
         // Get the obstacles array from our world
              ground = basicScene.world.getGround();
 
         this.caster2.set(this.mesh.position, new THREE.Vector3(0, -1, 0));
         collisions = this.caster2.intersectObjects(ground);
 
-        if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > 64)){
+        if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > distance)){
             this.fall();
             // console.log(this.mesh.position.y);
             if(this.mesh.position.y < -300){
@@ -262,7 +309,6 @@ var Character = Class.extend({
     isOverAHole: function(){
         'use strict';
         var typeOfCube = this.getTypeOfCubeImOver();
-        console.log(typeOfCube);
         if(typeOfCube == "hole") return true;
         else return false;
     },

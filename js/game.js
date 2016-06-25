@@ -99,6 +99,7 @@ var BasicScene = Class.extend({
             }
             // Update the character's direction
             user.setDirection(controls);
+            user.crushStone(controls);
         });
         // When the user release a key up
         jQuery(document).keyup(function (e) {
@@ -145,6 +146,7 @@ var BasicScene = Class.extend({
             }
             // Update the character's direction
             user.setDirection(controls);
+            user.crushStone(controls);
         });
         // On resize
         jQuery(window).resize(function () {
@@ -175,8 +177,7 @@ var BasicScene = Class.extend({
         'use strict';
         // Run a new step of the user's motions
         this.user.motion();
-        // Use stone crusher
-        this.user.crushStone();
+
 
         // Set the camera to look at our user's character
         this.setFocus(this.user.mesh);

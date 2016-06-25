@@ -11,9 +11,6 @@ var World = Class.extend({
             ],
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args),
-            cubeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/seamless-grass.jpg') } ),
-            holeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/holetexture.png') } ),
-            rachMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/rachadura.png') } ),
             water = new THREE.PlaneGeometry(2000,2000, 1, 1),
             waterMaterial = new THREE.MeshLambertMaterial({color: 0x2194ce }),
             level = [
@@ -25,10 +22,10 @@ var World = Class.extend({
                 [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
                 [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
                 [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
-                [0,0,0,0,0,0,3,3,2,1,1,2,1,1,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,1],
-                [0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,1,2,1,1,2,3,3,0,0,0,0,0,0],
+                [0,0,0,0,0,0,3,3,2,3,3,2,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,3,1,1,3,1,1,0,0,0,0,0,1],
+                [0,0,0,0,0,0,1,1,3,1,1,3,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,2,3,3,2,3,3,0,0,0,0,0,0],
                 [0,1,1,1,1,3,1,1,3,1,1,1,1,1,3,1,1,1,1,0],
                 [0,1,1,1,1,3,1,1,3,1,1,1,1,1,3,1,1,1,1,0],
                 [0,1,1,1,1,3,1,1,3,1,1,1,1,1,3,1,3,1,1,0],
@@ -55,9 +52,12 @@ var World = Class.extend({
         this.mesh.add(this.water);
 
         // Set the ground
-        this.groundCube = new THREE.Mesh(groundCube, cubeMaterial);
-        this.holeCube = new THREE.Mesh(groundCube, holeMaterial);
-        this.rachCube = new THREE.Mesh(groundCube, rachMaterial);
+        this.cubeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/seamless-grass.jpg') } );
+        this.holeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/holetexture.png') } );
+        this.rachMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/rachadura.png') } );
+        this.groundCube = new THREE.Mesh(groundCube, this.cubeMaterial);
+        this.holeCube = new THREE.Mesh(groundCube, this.holeMaterial);
+        this.rachCube = new THREE.Mesh(groundCube, this.rachMaterial);
         this.ground2 = new Array();
 
         for(var i = 0; i < level.length; i++){
@@ -102,5 +102,20 @@ var World = Class.extend({
     getGround: function(){
         'use strict';
         return this.ground2;
+    },
+    getGroundType: function(i, j){
+        if( i >= 20 || i < 0 || j >= 20 || j < 0) return "ND";
+        if(this.level[i][j] == 0){
+            return "water";
+        }
+        else if(this.level[i][j] == 1){
+            return "ground";
+        }
+        else if(this.level[i][j] == 2){
+            return "hole";
+        }
+        else if(this.level[i][j] == 3){
+            return "rachadura";
+        }
     }
 });
