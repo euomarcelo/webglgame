@@ -133,11 +133,41 @@ var Character = Class.extend({
             var posToDig = this.canDigHere();
 
             if(posToDig !== null){
+                /* position stuff, update indexes */
                 var cube = basicScene.world.floorCubes[posToDig.i][posToDig.j];
-                basicScene.world.level[posToDig.i][posToDig.j] = 3;
-                // TODO CHECK FOR EARTHQUAKES!
-                cube.material = basicScene.world.rachMaterial;
-                // cube.material.needsUpdate = true;
+                cube.material = basicScene.world.rachMaterial;  // muda a textura do bloco
+                // cube.material.needsUpdate = true; //BUG?
+                basicScene.world.level[posToDig.i][posToDig.j] = 3; // posiciona a rachadura na matriz do level
+                var color1 = 1, color2 = 2;
+                /* CHECK FOR EARTHQUAKES! */
+                var world = basicScene.world;
+                world.regenerateFloodMatrix();
+                var unfilledIJ = world.getUnfilledFloodPosition();
+                console.log("1st pass");
+                world.floodFill(unfilledIJ[0], unfilledIJ[1], color1, color2);
+                var unfilledIJ = world.getUnfilledFloodPosition();
+                if(unfilledIJ.length > 0){ // existe uma divisão. uma deve ser desmoronada
+                    console.log("2nd pass");
+                    world.floodFill(unfilledIJ[0], unfilledIJ[1], color2, color1);
+                    // count colors 1 and 2 in flood matrix
+                    var color1Count = 0, color2Count = 0;
+                    for(var i = 0; i < 20; i++){
+                        for(var j = 0; j< 20; j++){
+                            if(world.floodMatrix[i][j] == color1) color1Count++;
+                            else if(world.floodMatrix[i][j] == color2) color2Count++;
+                        }
+                    }
+                    console.log("color1Count", color1Count);
+                    console.log("color2Count", color2Count);
+                    // earthquake strikes floodfilled blocks with less area
+                    if(color1Count < color2Count){
+                        world.landslide(1);
+                    }
+                    else {
+                        world.landslide(2);
+                    }
+                }
+
             }
         }
     },

@@ -169,7 +169,7 @@ var BasicScene = Class.extend({
     // Updating the camera to follow and look at a given Object3D / Mesh
     setFocus: function (object) {
         'use strict';
-        this.camera.position.set(object.position.x, object.position.y + 256, object.position.z - 528);
+        this.camera.position.set(object.position.x, object.position.y + 1256, object.position.z - 1528); //528
         this.camera.lookAt(object.position);
     },
     // Update and draw the scene
