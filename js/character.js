@@ -70,6 +70,7 @@ var Character = Class.extend({
         this.rotationDifference = 0;
         this.caster = new THREE.Raycaster();
         this.caster2 = new THREE.Raycaster();
+        this.weaponHasToBeFired = false;
 
     },
     // Update the direction of the current motion
@@ -109,6 +110,7 @@ var Character = Class.extend({
                 this.lookDirection.set(0,0,-1);
             }
         }
+        if(controls.weapon) this.fireWeapon();
     },
     // Process the character motions
     motion: function () {
@@ -374,4 +376,61 @@ var Character = Class.extend({
         else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
         else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
     },
+    fireWeapon: function(){
+        if(this.alive){
+            console.log("WEAPON FIRED!");
+            var level = basicScene.world.level;
+            var participants = basicScene.world.participants;
+            var enemies = basicScene.world.enemies;
+            var currIJ = this.getCubeposition();
+            var direction =  this.getDirectionThatIsFacing();
+
+            for(var x = 0; x < enemies.length; x++){
+                var enemyIJ = enemies[x].getCubeposition();
+                switch(direction){
+                    case "N":
+                        if((currIJ.i + 1 == enemyIJ.i || currIJ.i + 2 == enemyIJ.i) && currIJ.j == enemyIJ.j){   /* enemy is north within 2 squares */
+                            if(enemies[x].isDirectionValidToGo(enemyIJ.i + 2, enemyIJ.j)){
+                                enemies[x].pushedTo(enemyIJ.i + 2, enemyIJ.j, direction);
+                            }
+                            else if(enemies[x].isDirectionValidToGo(enemyIJ.i + 1, enemyIJ.j)){
+                                enemies[x].pushedTo(enemyIJ.i + 1, enemyIJ.j, direction);
+                            }
+                        }
+                        break;
+                    case "S":
+                        if((currIJ.i - 1 == enemyIJ.i || currIJ.i - 2 == enemyIJ.i) && currIJ.j == enemyIJ.j){   /* enemy is north within 2 squares */
+                            if(enemies[x].isDirectionValidToGo(enemyIJ.i - 2, enemyIJ.j)){
+                                enemies[x].pushedTo(enemyIJ.i - 2, enemyIJ.j, direction);
+                            }
+                            else if(enemies[x].isDirectionValidToGo(enemyIJ.i - 1, enemyIJ.j)){
+                                enemies[x].pushedTo(enemyIJ.i - 1, enemyIJ.j, direction);
+                            }
+                        }
+                        break;
+                    case "W":
+                        if((currIJ.j + 1 == enemyIJ.j || currIJ.j + 2 == enemyIJ.j) && currIJ.i == enemyIJ.i){   /* enemy is north within 2 squares */
+                            if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 2)){
+                                enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 2, direction);
+                            }
+                            else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 1)){
+                                enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 1, direction);
+                            }
+                        }
+                        break;
+                    case "E":
+                        if((currIJ.j - 1 == enemyIJ.j || currIJ.j - 2 == enemyIJ.j) && currIJ.i == enemyIJ.i){   /* enemy is north within 2 squares */
+                            if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 2)){
+                                enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 2, direction);
+                            }
+                            else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 1)){
+                                enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 1, direction);
+                            }
+                        }
+                        break;
+                }
+
+            }
+        }
+    }
 });

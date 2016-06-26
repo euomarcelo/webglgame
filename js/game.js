@@ -13,7 +13,7 @@ var BasicScene = Class.extend({
         this.renderer = new THREE.WebGLRenderer();
         // Define the container for the renderer
         this.container = jQuery('#basic-scene');
-        this.keyAllowed = {37: true, 39: true};
+        this.keyAllowed = {37: true, 39: true, 70: true};
 
         // Create the "world" : a 3D representation of the place we'll be putting our character in
         this.world = new World({
@@ -30,9 +30,12 @@ var BasicScene = Class.extend({
         // Insert the renderer in the container
         this.container.prepend(this.renderer.domElement);
         // Set the camera to look at our user's character
-        this.setFocus(this.user.mesh);
+        this.setFocus();
         // Start the events handlers
         this.setControls();
+
+        this.cameraTypes = ['3rd', '1st', 'top'];
+        this.currentCamera = 0;
 
         // flags
         this.gameOver = false;
@@ -51,10 +54,12 @@ var BasicScene = Class.extend({
                 right: false,
                 down: false,
                 space: false,
+                weapon: false,
                 a: false,
                 w: false,
                 s: false,
-                d: false
+                d: false,
+                camera: false
             };
         // When the user push a key down
         jQuery(document).keydown(function (e) {
@@ -80,17 +85,31 @@ var BasicScene = Class.extend({
                 case 32:
                     controls.space = true;
                     break;
-                case 65:
-                    controls.a = true;
+                case 65: // A
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
+                    controls.left = true;
                     break;
-                case 83:
-                    controls.s = true;
+                case 83: // S
+                    controls.down = true;
                     break;
-                case 68:
-                    controls.d = true;
+                case 68: // D
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
+                    controls.right = true;
                     break;
-                case 87:
-                    controls.w = true;
+                case 87: // W
+                    controls.up = true;
+                    break;
+                case 70: // F WEAPON
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
+                    controls.weapon = true;
+                    break;
+                case 86: // V
+                    if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
+                    self.keyAllowed [parseInt(e.keyCode)] = false;
+                    controls.camera = true;
                     break;
                 default:
                     prevent = false;
@@ -127,17 +146,27 @@ var BasicScene = Class.extend({
                 case 32:
                     controls.space = false;
                     break;
-                case 65:
-                    controls.a = false;
+                case 65: // A
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
+                    controls.left = false;
                     break;
-                case 83:
-                    controls.s = false;
+                case 83: // S
+                    controls.down = false;
                     break;
-                case 68:
-                    controls.d = false;
+                case 68: // D
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
+                    controls.right = false;
                     break;
-                case 87:
-                    controls.w = false;
+                case 87: // W
+                    controls.up = false;
+                    break;
+                case 70:
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
+                    controls.weapon = false;
+                    break;
+                case 86:
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
+                    controls.camera = false;
                     break;
                 default:
                     prevent = false;
@@ -171,10 +200,19 @@ var BasicScene = Class.extend({
         this.camera.updateProjectionMatrix();
     },
     // Updating the camera to follow and look at a given Object3D / Mesh
-    setFocus: function (object) {
+    setFocus: function (type) {
         'use strict';
-        this.camera.position.set(object.position.x, object.position.y + 1256, object.position.z - 1528); //528
-        this.camera.lookAt(object.position);
+        if(type === undefined){
+            type = 2;
+        }
+        switch(type){
+            case 2:
+                var object = this.user.mesh;
+                this.camera.position.set(object.position.x, object.position.y + 1256, object.position.z - 1528); //528
+                this.camera.lookAt(object.position);
+                break;
+        }
+
     },
     // Update and draw the scene
     frame: function () {

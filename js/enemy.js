@@ -77,6 +77,8 @@ var Enemy = Class.extend({
         this.falling = false;
         this.positionToGo;
         this.directionToGo = "";
+        this.gotPushed = false;
+        this.gotPushedSpeed = 20;
     },
     move: function(){
         'use strict';
@@ -85,26 +87,27 @@ var Enemy = Class.extend({
         var currIJ = this.getCubeposition();
         if(this.alive && !this.isOverTheWater()) {
             // define direction to go
-            if (this.isPlayerNear()) {
+            if (!this.gotPushed && this.isPlayerNear()) {
                 this.defineDirectionTowardPlayer();
             }
             else if ((this.positionToGo == undefined) ||
                 (currIJ.i == this.positionToGo.i && currIJ.j == this.positionToGo.j)) { // only change direction if enemy got to where he was heading
+                this.gotPushed = false;
                 this.defineRandomDirectionToGo();
             }
 
             switch (this.directionToGo) {
                 case "N":
-                    this.mesh.position.z += this.speed * this.isOverCrack();
+                    this.mesh.position.z += this.speed * this.isOverCrack() * this.isBeingPushed();
                     break;
                 case "S":
-                    this.mesh.position.z += this.speed * -1 * this.isOverCrack();
+                    this.mesh.position.z += this.speed * -1 * this.isOverCrack() * this.isBeingPushed();
                     break;
                 case "W":
-                    this.mesh.position.x += this.speed * this.isOverCrack();
+                    this.mesh.position.x += this.speed * this.isOverCrack() * this.isBeingPushed();
                     break;
                 case "E":
-                    this.mesh.position.x += this.speed * -1 * this.isOverCrack();
+                    this.mesh.position.x += this.speed * -1 * this.isOverCrack() * this.isBeingPushed();
                     break;
             }
             var newCurrIJ = this.getCubeposition();
@@ -262,5 +265,16 @@ var Enemy = Class.extend({
         else {
             return 1;
         }
+    }, 
+    pushedTo: function(x, y, direction){
+        this.gotPushed = true;
+        this.positionToGo = {i: x, j: y};
+        this.directionToGo = direction;
+    },
+    isBeingPushed: function () {
+        if(this.gotPushed){
+            return this.gotPushedSpeed;
+        }
+        else return 1;
     }
 });
