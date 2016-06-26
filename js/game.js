@@ -177,6 +177,7 @@ var BasicScene = Class.extend({
         'use strict';
         // Run a new step of the user's motions
         this.user.motion();
+        this.world.enemiesMove();
 
 
         // Set the camera to look at our user's character

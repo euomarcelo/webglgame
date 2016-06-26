@@ -9,6 +9,9 @@ var Character = Class.extend({
             nose = new THREE.SphereGeometry(4, 8, 8),
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args);
+        // flags
+        this.alive = true;
+
         // Set the character modelisation object
         this.mesh = new THREE.Object3D();
         this.mesh.position.y = 48;
@@ -225,6 +228,7 @@ var Character = Class.extend({
             this.fall();
             // console.log(this.mesh.position.y);
             if(this.mesh.position.y < -300){
+                this.alive = false;
                 gameOver();
             }
         }
@@ -304,14 +308,16 @@ var Character = Class.extend({
     move: function () {
         'use strict';
         // We update our Object3D's position from our "direction"
+        var oldPosIJ = this.getCubeposition();
         if(this.lookDirection.x != 0){
             this.mesh.position.x += this.lookDirection.x * 4 * this.direction.z;
         }
         else if(this.lookDirection.z != 0){
             this.mesh.position.z += this.lookDirection.z * 4 * this.direction.z;
         }
-        // this.mesh.position.x += this.direction.x * ((this.direction.z === 0) ? 4 : Math.sqrt(8));
-        // this.mesh.position.z += this.direction.z * ((this.direction.x === 0) ? 4 : Math.sqrt(8));
+        var curPosIJ = this.getCubeposition();
+        basicScene.world.participants[oldPosIJ.i][oldPosIJ.j] = 0;
+        basicScene.world.participants[curPosIJ.i][curPosIJ.j] = 5;
 
         // Now some trigonometry, using our "step" property ...
         this.step += 1 / 4;

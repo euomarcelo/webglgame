@@ -34,10 +34,32 @@ var World = Class.extend({
                 [0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,3,1,1,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            ],
+            participants = [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ];
         // Set the "world" modelisation object
         this.mesh = new THREE.Object3D();
-
+        this.participants = participants;
         this.level = level;
         this.blankFloodMatrix = new Array(20);
         for (var i = 0; i < 20; i++) {
@@ -66,6 +88,7 @@ var World = Class.extend({
         this.rachCube = new THREE.Mesh(groundCube, this.rachMaterial);
         this.ground2 = new Array();
 
+        // set map blocks, holes and cracks
         for(var i = 0; i < level.length; i++){
             for(var j = 0; j < level.length; j++){
                 if(level[i][j] != 0) {
@@ -87,6 +110,22 @@ var World = Class.extend({
                 }
             }
         }
+        // set enemies positions and the player
+        this.enemies = new Array();
+        for(var i = 0; i < this.participants.length; i++) {
+            for (var j = 0; j < this.participants.length; j++) {
+                if (this.participants[i][j] == 4) { //enemy
+                    var enemy = new Enemy({
+                        color: 0xC60000
+                    });
+                    this.mesh.add(enemy.mesh);
+                    enemy.mesh.position.set((j * groundCubeSize) - 1000,
+                        8,
+                        (i * groundCubeSize) - 1000);
+                    this.enemies.push(enemy);
+                }
+            }
+        }
 
         this.obstacles = [];
         for (var i = 0; i < obstacles.length; i += 1) {
@@ -95,6 +134,7 @@ var World = Class.extend({
         }
         this.obstacles[0].position.set(0, 0, 128);
 
+        // set enemies on the scene
 
     },
     getObstacles: function () {
@@ -172,6 +212,11 @@ var World = Class.extend({
                     this.floorCubes[i][j].position.setY(-2000);
                 }
             }
+        }
+    },
+    enemiesMove: function () {
+        for(var i = 0; i < this.enemies.length; i++){
+            this.enemies[i].move();
         }
     }
 });
