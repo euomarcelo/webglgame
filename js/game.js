@@ -182,8 +182,9 @@ var BasicScene = Class.extend({
         // Run a new step of the user's motions
         if(this.user.alive){
             this.user.motion();
+            this.world.enemiesMove();
         }
-        this.world.enemiesMove();
+
 
         // Set the camera to look at our user's character
         this.setFocus(this.user.mesh);

@@ -11,3 +11,8 @@ body {
 #container {
     z-index:-1;
 }
+
+.message {
+    font-size: 100px;
+    font-family: 'Alegreya SC', serif;
+}
