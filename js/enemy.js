@@ -66,13 +66,15 @@ var Enemy = Class.extend({
 
         this.mesh.position.setY(8);
 
-        // And the "RayCaster", able to test for intersections
+        this.alive = true;
         this.lookDirection = new THREE.Vector3(0, 0, 1);
         this.rotationDifference = 0;
-        this.caster = new THREE.Raycaster();
+        this.caster = new THREE.Raycaster(); // And the "RayCaster", able to test for intersections
         this.caster2 = new THREE.Raycaster();
 
-        this.speed = 3;
+        this.speed = 2;
+        this.speedOnCrack = 0.3;
+        this.falling = false;
         this.positionToGo;
         this.directionToGo = "";
     },
@@ -81,50 +83,75 @@ var Enemy = Class.extend({
         var level = basicScene.world.level;
         var participants = basicScene.world.participants;
         var currIJ = this.getCubeposition();
+        if(this.alive && !this.isOverTheWater()) {
+            // define direction to go
+            if (this.isPlayerNear()) {
+                this.defineDirectionTowardPlayer();
+            }
+            else if ((this.positionToGo == undefined) ||
+                (currIJ.i == this.positionToGo.i && currIJ.j == this.positionToGo.j)) { // only change direction if enemy got to where he was heading
+                this.defineRandomDirectionToGo();
+            }
 
-        // detecta se player está a quatro casas de distância
-        // se sim, vai até ele
-        // se não, define uma direção aleatória e anda até chegar a ela, respeitando colisões
-        // vê se chegou no destino, senão pega outra posição
-        if( (this.positionToGo == undefined) ||
-            (currIJ.i == this.positionToGo.i && currIJ.j == this.positionToGo.j)){
-            this.defineRandomDirectionToGo();
-        }
-        // this.defineRandomDirectionToGo();
-        switch (this.directionToGo){
-            case "N":
-                this.mesh.position.z += this.speed;
-                break;
-            case "S":
-                this.mesh.position.z += this.speed * -1;
-                break;
-            case "W":
-                this.mesh.position.x += this.speed;
-                break;
-            case "E":
-                this.mesh.position.x += this.speed * -1;
-                break;
-        }
-        var newCurrIJ = this.getCubeposition();
-        participants[currIJ.i][currIJ.j] = 0;
-        participants[newCurrIJ.i][newCurrIJ.j] = 4;
+            switch (this.directionToGo) {
+                case "N":
+                    this.mesh.position.z += this.speed * this.isOverCrack();
+                    break;
+                case "S":
+                    this.mesh.position.z += this.speed * -1 * this.isOverCrack();
+                    break;
+                case "W":
+                    this.mesh.position.x += this.speed * this.isOverCrack();
+                    break;
+                case "E":
+                    this.mesh.position.x += this.speed * -1 * this.isOverCrack();
+                    break;
+            }
+            var newCurrIJ = this.getCubeposition();
+            participants[currIJ.i][currIJ.j] = 0;
+            participants[newCurrIJ.i][newCurrIJ.j] = 4;
 
-        // Now some trigonometry, using our "step" property ...
-        this.step += 1 / 4;
-        // ... to slightly move our feet and hands
-        this.feet.left.position.setZ(Math.sin(this.step) * 16);
-        this.feet.right.position.setZ(Math.cos(this.step + (Math.PI / 2)) * 16);
-        this.hands.left.position.setZ(Math.cos(this.step + (Math.PI / 2)) * 8);
-        this.hands.right.position.setZ(Math.sin(this.step) * 8);
+            // Now some trigonometry, using our "step" property ...
+            this.step += 1 / 4;
+            // ... to slightly move our feet and hands
+            this.feet.left.position.setZ(Math.sin(this.step) * 16);
+            this.feet.right.position.setZ(Math.cos(this.step + (Math.PI / 2)) * 16);
+            this.hands.left.position.setZ(Math.cos(this.step + (Math.PI / 2)) * 8);
+            this.hands.right.position.setZ(Math.sin(this.step) * 8);
+        }
+        else { // enemy is falling
+            if(this.falling) this.fall();
+        }
+    },
+    defineDirectionTowardPlayer: function(){
+        var playerPosition = basicScene.user.getCubeposition();
+        var currIJ = this.getCubeposition();
+        var iDelta = playerPosition.i - currIJ.i;
+        var jDelta = playerPosition.j - currIJ.j;
+        if(iDelta > 0 && this.isDirectionValidToGo(currIJ.i + 1, currIJ.j)){
+            this.positionToGo = {i: currIJ.i + 1, j: currIJ.j};
+            this.directionToGo = "N";
+        }
+        else if(iDelta < 0 && this.isDirectionValidToGo(currIJ.i - 1, currIJ.j)){
+            this.positionToGo = {i: currIJ.i - 1, j: currIJ.j};
+            this.directionToGo = "S";
+        }
+        else if(jDelta > 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j + 1)){
+            this.positionToGo = {i: currIJ.i, j: currIJ.j + 1};
+            this.directionToGo = "W";
+        }
+        else if(jDelta < 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j -1)){
+            this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
+            this.directionToGo = "E";
+        }
     },
     defineRandomDirectionToGo: function () {
         'use strict';
-        var level = basicScene.world.level;
-        // var participants = basicScene.world.participants;
         var directions = ["N", "S", "W", "E"];
         var currIJ = this.getCubeposition();
 
         var directionIsInvalid = true;
+        var loopCount = 0;
         while(directionIsInvalid) {
             var randomDirection = directions[Math.floor(Math.random() * 4)];
             switch (randomDirection) {
@@ -157,6 +184,8 @@ var Enemy = Class.extend({
                     }
                     break;
             }
+            loopCount++;
+            if(loopCount > 20) break;
         }
     },
     getCubeposition: function(){
@@ -180,4 +209,58 @@ var Enemy = Class.extend({
             return false;
         }
     },
+    isPlayerNear: function(){
+        var playerPosition = basicScene.user.getCubeposition();
+        var currIJ = this.getCubeposition();
+        if(
+            (Math.abs(playerPosition.i - currIJ.i) <= 4) &&
+            (Math.abs(playerPosition.j - currIJ.j) <= 4)
+            ){
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+    isOverTheWater: function(){
+        var collisions,
+        // Maximum distance from the origin before we consider collision
+            distance = 64,
+        // Get the obstacles array from our world
+            ground = basicScene.world.getGround();
+        var level = basicScene.world.level;
+        var currIJ = this.getCubeposition();
+        // this.caster2.set(this.mesh.position, new THREE.Vector3(0, -1, 0));
+        // collisions = this.caster2.intersectObjects(ground);
+
+        if (level[currIJ.i][currIJ.j] == 0){
+            this.alive = false;
+            this.falling = true;
+            console.log("DED X_X");
+            return true;
+
+        }
+        else return false;
+    },
+    fall: function(){
+        'use strict';
+        if(this.mesh.position.y > -300){
+            this.mesh.position.y += -10;
+        }
+        else {
+            this.falling = false;
+        }
+
+    },
+    isOverCrack: function(){
+        var currIJ = this.getCubeposition();
+        var level = basicScene.world.level;
+
+        if(level[currIJ.i][currIJ.j] == 3){ // if over a crack, reduce the speed
+            return this.speedOnCrack;
+        }
+        else {
+            return 1;
+        }
+    }
 });

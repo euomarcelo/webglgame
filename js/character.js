@@ -9,8 +9,6 @@ var Character = Class.extend({
             nose = new THREE.SphereGeometry(4, 8, 8),
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args);
-        // flags
-        this.alive = true;
 
         // Set the character modelisation object
         this.mesh = new THREE.Object3D();
@@ -63,6 +61,9 @@ var Character = Class.extend({
             new THREE.Vector3(-1, 0, 0),
             new THREE.Vector3(-1, 0, 1)
         ];
+
+        // flags
+        this.alive = true;
 
         // And the "RayCaster", able to test for intersections
         this.lookDirection = new THREE.Vector3(0, 0, 1);
@@ -132,7 +133,7 @@ var Character = Class.extend({
         var space = controls.space;
         // var space = controls.space ? true : false;
         // console.log("space:", space);
-        if(space){
+        if(this.alive && space){
             var posToDig = this.canDigHere();
 
             if(posToDig !== null){
