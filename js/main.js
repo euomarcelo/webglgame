@@ -12,7 +12,8 @@ function initGame(){
 }
 
 function gameOver() {
-    basicScene = new BasicScene();
+    // basicScene = new BasicScene();
+    console.log("game over");
 }
 
 function transpose(a) {

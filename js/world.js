@@ -39,7 +39,7 @@ var World = Class.extend({
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -112,6 +112,7 @@ var World = Class.extend({
         }
         // set enemies positions and the player
         this.enemies = new Array();
+        this.enemysMeshes = new Array();
         for(var i = 0; i < this.participants.length; i++) {
             for (var j = 0; j < this.participants.length; j++) {
                 if (this.participants[i][j] == 4) { //enemy
@@ -119,6 +120,7 @@ var World = Class.extend({
                         color: 0xC60000
                     });
                     this.mesh.add(enemy.mesh);
+                    this.enemysMeshes.push(enemy.mesh.children[0]);
                     enemy.mesh.position.set((j * groundCubeSize) - 1000,
                         8,
                         (i * groundCubeSize) - 1000);

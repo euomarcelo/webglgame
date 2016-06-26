@@ -22,7 +22,7 @@ var BasicScene = Class.extend({
         this.scene.add(this.world.mesh);
         // Create the user's character
         this.user = new Character({
-            color: 0x7A43B6
+            color: 0xFFFC19 //0x7A43B6
         });
         this.scene.add(this.user.mesh);
         // Define the size of the renderer
@@ -33,6 +33,10 @@ var BasicScene = Class.extend({
         this.setFocus(this.user.mesh);
         // Start the events handlers
         this.setControls();
+
+        // flags
+        this.gameOver = false;
+        this.levelCleared = false;
     },
     // Event handlers
     setControls: function () {
@@ -176,9 +180,10 @@ var BasicScene = Class.extend({
     frame: function () {
         'use strict';
         // Run a new step of the user's motions
-        this.user.motion();
+        if(this.user.alive){
+            this.user.motion();
+        }
         this.world.enemiesMove();
-
 
         // Set the camera to look at our user's character
         this.setFocus(this.user.mesh);

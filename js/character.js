@@ -116,15 +116,17 @@ var Character = Class.extend({
         // Update the directions if we intersect with an obstacle
         this.fallingOnWater();
         this.collision();
-
-        // If we're not static
-        if (this.direction.z !== 0) {
-            // Move the character
-            this.move();
-        }
-        if(this.direction.x !== 0){
-            // Rotate the character
-            this.rotate();
+        this.collisionWithEnemies();
+        if(this.alive) {
+            // If we're not static
+            if (this.direction.z !== 0) {
+                // Move the character
+                this.move();
+            }
+            if (this.direction.x !== 0) {
+                // Rotate the character
+                this.rotate();
+            }
         }
         return true;
     },
@@ -226,9 +228,9 @@ var Character = Class.extend({
         collisions = this.caster2.intersectObjects(ground);
 
         if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > distance)){
-            this.fall();
+            if(this.alive && this.mesh.position.y > -300) this.fall();
             // console.log(this.mesh.position.y);
-            if(this.mesh.position.y < -300){
+            else {
                 this.alive = false;
                 gameOver();
             }
@@ -237,7 +239,7 @@ var Character = Class.extend({
     // Test and avoid collisions
     collision: function () {
         'use strict';
-        var collisions, i,
+        var collisions,
         // Maximum distance from the origin before we consider collision
             distance = 32,
         // Get the obstacles array from our world
@@ -261,7 +263,7 @@ var Character = Class.extend({
             var raysBack = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1)];
         }
 
-        for (i = 0; i < raysFront.length; i += 1) {
+        for (var i = 0; i < raysFront.length; i += 1) {
             // We reset the raycaster to this direction
             this.caster.set(this.mesh.position, raysFront[i]);
             // Test if we intersect with any obstacle mesh
@@ -271,7 +273,7 @@ var Character = Class.extend({
                 this.direction.z = 0;
             }
         }
-        for (i = 0; i < raysBack.length; i += 1) {
+        for (var i = 0; i < raysBack.length; i += 1) {
             // We reset the raycaster to this direction
             this.caster.set(this.mesh.position, raysBack[i]);
             // Test if we intersect with any obstacle mesh
@@ -279,6 +281,19 @@ var Character = Class.extend({
             // And disable that direction if we do
             if (collisions.length > 0 && collisions[0].distance <= distance && this.direction.z == -1) {
                 this.direction.z = 0;
+            }
+        }
+    },
+    collisionWithEnemies: function(){
+        'use strict';
+        var enemies = basicScene.world.enemies;
+        var currIJ = this.getCubeposition();
+        for(var i = 0; i < enemies.length; i++){
+            var enemyIJ = enemies[i].getCubeposition();
+            if(currIJ.i == enemyIJ.i && currIJ.j == enemyIJ.j){
+                console.log("UR DED X_X");
+                this.alive = false;
+                gameOver();
             }
         }
     },
