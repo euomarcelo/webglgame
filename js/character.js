@@ -376,11 +376,16 @@ var Character = Class.extend({
         else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
         else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
     },
+    getLookAt: function(){
+        // if(this.lookDirection.x == 0 && this.lookDirection.z == 1){ // north
+        //     return(new THREE.Vector3(Math.abs(this.mesh.position.x) + 200, )
+        // } return ;
+        // else if(this.lookDirection.x == -1 && this.lookDirection.z == 0) return "E";
+        // else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
+        // else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
+    },
     fireWeapon: function(){
         if(this.alive){
-            console.log("WEAPON FIRED!");
-            var level = basicScene.world.level;
-            var participants = basicScene.world.participants;
             var enemies = basicScene.world.enemies;
             var currIJ = this.getCubeposition();
             var direction =  this.getDirectionThatIsFacing();

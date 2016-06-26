@@ -5,14 +5,23 @@ var BasicScene = Class.extend({
         'use strict';
         // Create a scene, a camera, a light and a WebGL renderer with Three.JS
         this.scene = new THREE.Scene();
+        // CAMERAS
         this.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000);
         this.scene.add(this.camera);
+        this.camera1stPerson = new THREE.PerspectiveCamera(60, 1, 0.1, 10000);
+        this.scene.add(this.camera1stPerson);
+        this.camera3rdPerson = new THREE.PerspectiveCamera(60, 1, 0.1, 10000);
+        this.scene.add(this.camera3rPerson);
+        this.cameraTypes = ['3rd', '1st', 'top'];
+        this.currentCamera = 2;
+        this.cameraChanged = false;
+
+        // LIGHT
         this.light = new THREE.PointLight();
         this.light.position.set(-256, 256, -256);
         this.scene.add(this.light);
         this.renderer = new THREE.WebGLRenderer();
-        // Define the container for the renderer
-        this.container = jQuery('#basic-scene');
+        this.container = jQuery('#basic-scene'); // renderer container
         this.keyAllowed = {37: true, 39: true, 70: true};
 
         // Create the "world" : a 3D representation of the place we'll be putting our character in
@@ -33,9 +42,6 @@ var BasicScene = Class.extend({
         this.setFocus();
         // Start the events handlers
         this.setControls();
-
-        this.cameraTypes = ['3rd', '1st', 'top'];
-        this.currentCamera = 0;
 
         // flags
         this.gameOver = false;
@@ -123,6 +129,7 @@ var BasicScene = Class.extend({
             // Update the character's direction
             user.setDirection(controls);
             user.crushStone(controls);
+            self.changeCamera(controls);
         });
         // When the user release a key up
         jQuery(document).keyup(function (e) {
@@ -195,24 +202,50 @@ var BasicScene = Class.extend({
         // Fit the initial visible area's height
             h = jQuery(window).height();
         // Update the renderer and the camera
-        this.renderer.setSize(w, h);
-        this.camera.aspect = w / h;
+        var max = Math.max(h,800);
+        this.renderer.setSize(max, max);
+        this.camera.aspect = max / max;
         this.camera.updateProjectionMatrix();
     },
     // Updating the camera to follow and look at a given Object3D / Mesh
-    setFocus: function (type) {
+    setFocus: function () {
         'use strict';
-        if(type === undefined){
-            type = 2;
-        }
-        switch(type){
-            case 2:
-                var object = this.user.mesh;
-                this.camera.position.set(object.position.x, object.position.y + 1256, object.position.z - 1528); //528
-                this.camera.lookAt(object.position);
-                break;
-        }
+        var player = this.user.mesh;
 
+        // top camera
+        this.camera.position.set(player.position.x, player.position.y + 1800, player.position.z - 528); //528
+        this.camera.lookAt(player.position);
+
+        // 3rd person
+        var relativeCameraOffset = new THREE.Vector3(0,50,-200);
+        var cameraOffset = relativeCameraOffset.applyMatrix4( player.matrixWorld );
+        this.camera3rdPerson.position.x = cameraOffset.x;
+        this.camera3rdPerson.position.y = cameraOffset.y;
+        this.camera3rdPerson.position.z = cameraOffset.z;
+        this.camera3rdPerson.lookAt( player.position );
+
+        // 1st person
+        relativeCameraOffset = new THREE.Vector3(0,0,-1);
+        cameraOffset = relativeCameraOffset.applyMatrix4( player.matrixWorld );
+        this.camera1stPerson.position.x = cameraOffset.x;
+        this.camera1stPerson.position.y = cameraOffset.y;
+        this.camera1stPerson.position.z = cameraOffset.z;
+        this.camera1stPerson.lookAt( player.position );
+
+    },
+    changeCamera: function(controls){
+        'use strict';
+        if(controls.camera == true){
+            console.log("CHANGE THE CAMERA", this.currentCamera);
+            this.currentCamera = (this.currentCamera + 1) % 3;
+            if(this.currentCamera == 1){
+                // hide the mesh
+                this.user.mesh.children[5].visible = false; // hide the nose
+            }
+            else {
+                this.user.mesh.children[5].visible = true; // hide the nose
+            }
+        }
     },
     // Update and draw the scene
     frame: function () {
@@ -223,11 +256,19 @@ var BasicScene = Class.extend({
             this.world.enemiesMove();
         }
 
-
         // Set the camera to look at our user's character
         this.setFocus(this.user.mesh);
         // And draw !
-        this.renderer.render(this.scene, this.camera);
+        if(this.currentCamera == 2){
+            this.renderer.render(this.scene, this.camera);
+        }
+        else if(this.currentCamera == 0){
+            this.renderer.render(this.scene, this.camera3rdPerson);
+        }
+        else {
+            this.renderer.render(this.scene, this.camera1stPerson);
+        }
+
     }
 
 });
