@@ -20,7 +20,7 @@ var BasicScene = Class.extend({
         this.light = new THREE.PointLight();
         this.light.position.set(-256, 256, -256);
         this.scene.add(this.light);
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.container = jQuery('#basic-scene'); // renderer container
         this.keyAllowed = {37: true, 39: true, 70: true};
 
