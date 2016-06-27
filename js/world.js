@@ -2,36 +2,25 @@ var World = Class.extend({
     // Class constructor
     init: function (args) {
         // Set the different geometries composing the room
-        var waterLevel = 100,
-            ground2 = new Array(),
-            groundCubeSize = 100,
-            groundCube = new THREE.CubeGeometry( groundCubeSize, waterLevel, groundCubeSize ),
-            obstacles = [
-                new THREE.BoxGeometry(64, 64, 64)
-            ],
-        // Set the material, the "skin"
-            material = new THREE.MeshLambertMaterial(args),
-            water = new THREE.PlaneGeometry(2000,2000, 1, 1),
-            waterMaterial = new THREE.MeshLambertMaterial({color: 0x2194ce }),
-            level = [
+        var level = [
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,1,1,3,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0],
-                [0,1,1,3,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0],
-                [0,1,1,2,1,2,1,1,0,0,0,0,1,3,3,3,2,1,1,0],
-                [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
-                [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
-                [0,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,1,1,1,0],
-                [0,0,0,0,0,0,3,3,2,1,1,2,1,1,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
-                [0,0,0,0,0,0,1,1,2,3,1,2,3,3,0,0,0,0,0,0],
-                [0,1,1,1,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,0],
-                [0,1,1,1,1,1,1,1,3,1,1,1,1,1,3,1,1,1,1,0],
-                [0,1,1,1,1,1,1,1,3,1,1,1,1,1,3,1,3,1,1,0],
-                [0,1,2,1,1,2,1,1,0,0,0,0,1,1,2,1,3,1,1,0],
-                [0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,3,1,1,0],
-                [0,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,3,1,1,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ],
@@ -45,22 +34,48 @@ var World = Class.extend({
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             ];
-        // Set the "world" modelisation object
-        this.mesh = new THREE.Object3D();
-        this.participants = participants;
-        this.level = level;
+        this.colorTableForLevelCreation = {
+            '91dff5': 0, //water
+            'b6e71b': 1, //ground
+            '8d0418': 2, //hole
+            'ac7857': 3, //crack
+            'ff1614': 4, //enemy
+            'ffffff': 5, //player
+            '18bb3d': 6 //obstacle
+        };
+        // some defaults
+        this.groundCubeSize = 100;
+        this.waterLevel = 100;
+        this.obstacles = new Array();
+        this.enemies = new Array();
+        this.enemysMeshes = new Array();
+
+        // Set the material
+        this.cubeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/seamless-grass.jpg') } );
+        this.holeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/holetexture.png') } );
+        this.rachMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/rachadura.png') } );
+        this.ground2 = new Array();
+        this.material = new THREE.MeshLambertMaterial(args);
+        this.groundCubeGeometry = new THREE.CubeGeometry( this.groundCubeSize, this.waterLevel, this.groundCubeSize );
+        this.obstacleGeometry = new THREE.CubeGeometry( this.groundCubeSize -32, this.waterLevel, this.groundCubeSize -32);
+        this.waterGeometry = new THREE.PlaneGeometry(2000,2000, 1, 1);
+        this.waterMaterial = new THREE.MeshLambertMaterial({color: 0x2194ce });
+        this.groundCube = new THREE.Mesh(this.groundCubeGeometry, this.cubeMaterial);
+        this.holeCube = new THREE.Mesh(this.groundCubeGeometry, this.holeMaterial);
+        this.rachCube = new THREE.Mesh(this.groundCubeGeometry, this.rachMaterial);
+
         this.blankFloodMatrix = new Array(20);
         for (var i = 0; i < 20; i++) {
             this.blankFloodMatrix[i] = new Array(20);
@@ -74,45 +89,48 @@ var World = Class.extend({
             this.floorCubes[i] = new Array(20);
         }
 
-        this.water = new THREE.Mesh(water,waterMaterial);
+        // Set the "world" modelisation object
+        this.mesh = new THREE.Object3D();
+        this.participants = participants;
+        this.level = level;
+        this.createLevel();
+    },
+    levelSetupPit: function(){
+        this.water = new THREE.Mesh(this.waterGeometry, this.waterMaterial);
         this.water.rotation.x = -Math.PI / 2;
-        this.water.position.y = -waterLevel * 2;
+        this.water.position.y = -this.waterLevel * 2;
         this.mesh.add(this.water);
-
+    },
+    levelSetupFloor: function(){
+        'use strict';
         // Set the ground
-        this.cubeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/seamless-grass.jpg') } );
-        this.holeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/holetexture.png') } );
-        this.rachMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/rachadura.png') } );
-        this.groundCube = new THREE.Mesh(groundCube, this.cubeMaterial);
-        this.holeCube = new THREE.Mesh(groundCube, this.holeMaterial);
-        this.rachCube = new THREE.Mesh(groundCube, this.rachMaterial);
-        this.ground2 = new Array();
+
 
         // set map blocks, holes and cracks
-        for(var i = 0; i < level.length; i++){
-            for(var j = 0; j < level.length; j++){
-                if(level[i][j] != 0) {
-                    if (level[i][j] == 1) { //ground
+        for(var i = 0; i < this.level.length; i++){
+            for(var j = 0; j < this.level.length; j++){
+                if(this.level[i][j] != 0) {
+                    if (this.level[i][j] == 1) { //ground
                         var newBlock = this.groundCube.clone();
                     }
-                    else if (level[i][j] == 2) { // hole
+                    else if (this.level[i][j] == 2) { // hole
                         var newBlock = this.holeCube.clone();
                     }
-                    else if (level[i][j] == 3) { // crack
+                    else if (this.level[i][j] == 3) { // crack
                         var newBlock = this.rachCube.clone();
                     }
-                    newBlock.position.set((j * groundCubeSize) - 1000,
-                        -waterLevel,
-                        (i * groundCubeSize) - 1000);
+                    newBlock.position.set((j * this.groundCubeSize) - 1000,
+                        -this.waterLevel,
+                        (i * this.groundCubeSize) - 1000);
                     this.floorCubes[i][j] = newBlock;
                     this.mesh.add(newBlock);
                     this.ground2.push(newBlock);
                 }
             }
         }
+    },
+    levelSetupEnemies: function(){
         // set enemies positions and the player
-        this.enemies = new Array();
-        this.enemysMeshes = new Array();
         for(var i = 0; i < this.participants.length; i++) {
             for (var j = 0; j < this.participants.length; j++) {
                 if (this.participants[i][j] == 4) { //enemy
@@ -121,22 +139,59 @@ var World = Class.extend({
                     });
                     this.mesh.add(enemy.mesh);
                     this.enemysMeshes.push(enemy.mesh.children[0]);
-                    enemy.mesh.position.set((j * groundCubeSize) - 1000,
+                    enemy.mesh.position.set((j * this.groundCubeSize) - 1000,
                         8,
-                        (i * groundCubeSize) - 1000);
+                        (i * this.groundCubeSize) - 1000);
                     this.enemies.push(enemy);
                 }
             }
         }
-
-        this.obstacles = [];
-        for (var i = 0; i < obstacles.length; i += 1) {
-            this.obstacles.push(new THREE.Mesh(obstacles[i], material));
-            this.mesh.add(this.obstacles[i]);
+    },
+    levelSetupObstacles: function(){
+        for(var i = 0; i < this.participants.length; i++){
+            for(var j = 0; j < this.participants.length; j++){
+                if(this.participants[i][j] == 6) {
+                    var obstacle = new THREE.Mesh(this.obstacleGeometry, this.cubeMaterial);
+                    this.obstacles.push(obstacle);
+                    obstacle.position.set((j * this.groundCubeSize) - 1000,
+                        8,
+                        (i * this.groundCubeSize) - 1000);
+                    this.mesh.add(obstacle);
+                }
+            }
         }
-        this.obstacles[0].position.set(0, 0, 128);
+    },
+    createLevel: function(){
+        'use strict';
+        var self = this;
+        var drawing = new Image();
+        var level = this.level;
+        var participants = this.participants;
+        drawing.src = "images/level.png"; // can also be a remote URL e.g. http://
+        var canvas = document.getElementById("level");
+        var context = canvas.getContext('2d');
+        drawing.onload = function() {
+            context.drawImage(drawing,0,0);
+            for(var i = 0; i < 20; i++){
+                for(var j = 0; j < 20; j++){
+                    var p = context.getImageData(i, j, 1, 1).data;
+                    var color = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+                    var code = self.colorTableForLevelCreation[color];
+                    if(code == 4 || code == 5 || code == 6){ //participant
+                        participants[i][j] = code;
+                        level[i][j] = 1;
+                    }
+                    else {
+                        level[i][j] = code;
+                    }
+                }
+            }
+            self.levelSetupFloor();
+            self.levelSetupPit();
+            self.levelSetupObstacles();
+            self.levelSetupEnemies();
 
-        // set enemies on the scene
+        };
 
     },
     getObstacles: function () {
@@ -206,13 +261,45 @@ var World = Class.extend({
         }
     },
     landslide: function(color){
-        console.log("EARTHQUAKE", color);
+        // console.log("EARTHQUAKE", color);
         for (var i = 0; i < 20; i++) {
             for (var j = 0; j < 20; j++) {
                 if(this.floodMatrix[i][j] == color){
                     this.level[i][j] = 0;
                     this.floorCubes[i][j].position.setY(-2000);
+                    this.floorCubes[i][j].visible = false;
                 }
+            }
+        }
+    },
+    landslideUnconnectedCracks: function(){
+        for (var i = 1; i < 19; i++) {
+            for (var j = 1; j < 19; j++) {
+                if(this.level[i][j] == 2 || this.level[i][j] == 3){
+                    if(this.level[i+1][j] != 1 && this.level[i-1][j] != 1 && this.level[i][j+1] != 1 && this.level[i][j-1] != 1){
+                        if(this.level[i][j] == 3){
+                            this.level[i][j] = 0;
+                            this.floorCubes[i][j].position.setY(-2000);
+                            this.floorCubes[i][j].visible = false;
+                        }
+                        else if(this.level[i+1][j+1] != 1 && this.level[i-1][j-1] != 1 && this.level[i+1][j-1] != 1 && this.level[i-1][j+1] != 1){
+                            this.level[i][j] = 0;
+                            this.floorCubes[i][j].position.setY(-2000);
+                            this.floorCubes[i][j].visible = false;
+                        }
+                    }
+                }
+            }
+        }
+    },
+    destroyFloatingObstacles: function(){
+        var level = this.level;
+        var obstacles = this.obstacles;
+        for(var i = 0; i < obstacles.length; i++){
+            var posI = Math.round((obstacles[i].position.z + 1000)/100);
+            var posJ = Math.round((obstacles[i].position.x + 1000)/100);
+            if(level[posI][posJ] == 0){
+                obstacles[i].visible = false;
             }
         }
     },

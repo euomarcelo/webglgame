@@ -171,6 +171,8 @@ var Character = Class.extend({
                     else {
                         world.landslide(2);
                     }
+                    world.landslideUnconnectedCracks();
+                    world.destroyFloatingObstacles();
                 }
             }
         }

@@ -72,7 +72,7 @@ var Enemy = Class.extend({
         this.caster = new THREE.Raycaster(); // And the "RayCaster", able to test for intersections
         this.caster2 = new THREE.Raycaster();
 
-        this.speed = 2;
+        this.speed = 1;
         this.speedOnCrack = 0.3;
         this.falling = false;
         this.positionToGo;
@@ -200,10 +200,11 @@ var Enemy = Class.extend({
     isDirectionValidToGo: function(i, j){
         var level = basicScene.world.level;
         var participants = basicScene.world.participants;
+
         if (
             (i > 0 && i < 19 && j > 0 && j < 19) &&
             (level[i][j] == 1 || level[i][j] == 2 || level[i][j] == 3) &&
-            (level[i][j] != 6) &&
+            (participants[i][j] != 6) &&
             (participants[i][j] != 4)
         ) {
             return true;
@@ -260,7 +261,7 @@ var Enemy = Class.extend({
         var currIJ = this.getCubeposition();
         var level = basicScene.world.level;
 
-        if(level[currIJ.i][currIJ.j] == 3){ // if over a crack, reduce the speed
+        if(level[currIJ.i][currIJ.j] == 3 || level[currIJ.i][currIJ.j] == 2){ // if over a crack, reduce the speed
             return this.speedOnCrack;
         }
         else {

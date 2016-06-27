@@ -234,7 +234,7 @@ var BasicScene = Class.extend({
     changeCamera: function(controls){
         'use strict';
         if(controls.camera == true){
-            console.log("CHANGE THE CAMERA", this.currentCamera);
+            // console.log("CHANGE THE CAMERA", this.currentCamera);
             this.currentCamera = (this.currentCamera + 1) % 3;
             if(this.currentCamera == 1){
                 // hide the mesh
@@ -274,12 +274,17 @@ var BasicScene = Class.extend({
         for(var i = 0; i < enemies.length; i++){
             if(!enemies[i].alive) deadCount++;
         }
-        if(deadCount == enemies.length) this.levelCleared = true;
-        this.gameWon();
-        return true;
+        if(deadCount == enemies.length) {
+            this.levelCleared = true;
+            this.gameWon();
+            return true;
+        }
+        else {
+            return false;
+        }
     },
     gameWon: function() {
-        console.log("game won");
+        // console.log("game won");
         $('<div id="message-outter"><div id="message-won"><h1>VITÓRIA!</h1><p>pressione ENTER para jogar de novo</p></div></div>').prependTo("#basic-scene").addClass('message-div');
         jQuery(document).keydown(function (e) {
             if(e.keyCode == 13){
@@ -302,7 +307,7 @@ var BasicScene = Class.extend({
             }
         });
 
-        console.log("game over");
+        // console.log("game over");
     },
 
 
