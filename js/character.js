@@ -67,11 +67,8 @@ var Character = Class.extend({
 
         // And the "RayCaster", able to test for intersections
         this.lookDirection = new THREE.Vector3(0, 0, 1);
-        this.rotationDifference = 0;
         this.caster = new THREE.Raycaster();
         this.caster2 = new THREE.Raycaster();
-        this.weaponHasToBeFired = false;
-
     },
     // Update the direction of the current motion
     setDirection: function (controls) {
@@ -175,9 +172,9 @@ var Character = Class.extend({
                         world.landslide(2);
                     }
                 }
-
             }
         }
+
     },
     canDigHere: function(){
         var directionImFacing = this.getDirectionThatIsFacing(); // N S W E
@@ -234,7 +231,7 @@ var Character = Class.extend({
             // console.log(this.mesh.position.y);
             else {
                 this.alive = false;
-                gameOver();
+                basicScene.gameOver();
             }
         }
     },
@@ -295,7 +292,7 @@ var Character = Class.extend({
             if(currIJ.i == enemyIJ.i && currIJ.j == enemyIJ.j){
                 console.log("UR DED X_X");
                 this.alive = false;
-                gameOver();
+                basicScene.gameOver();
             }
         }
     },
@@ -375,14 +372,6 @@ var Character = Class.extend({
         else if(this.lookDirection.x == -1 && this.lookDirection.z == 0) return "E";
         else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
         else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
-    },
-    getLookAt: function(){
-        // if(this.lookDirection.x == 0 && this.lookDirection.z == 1){ // north
-        //     return(new THREE.Vector3(Math.abs(this.mesh.position.x) + 200, )
-        // } return ;
-        // else if(this.lookDirection.x == -1 && this.lookDirection.z == 0) return "E";
-        // else if(this.lookDirection.x == 0 && this.lookDirection.z == -1) return "S";
-        // else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
     },
     fireWeapon: function(){
         if(this.alive){

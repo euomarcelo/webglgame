@@ -239,9 +239,7 @@ var Enemy = Class.extend({
         if (level[currIJ.i][currIJ.j] == 0){
             this.alive = false;
             this.falling = true;
-            console.log("DED X_X");
             return true;
-
         }
         else return false;
     },
@@ -251,7 +249,10 @@ var Enemy = Class.extend({
             this.mesh.position.y += -10;
         }
         else {
+            console.log("NOT FALLING");
             this.falling = false;
+            basicScene.isLevelCleared();
+            console.log("DED X_X");
         }
 
     },

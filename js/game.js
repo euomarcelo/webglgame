@@ -4,17 +4,17 @@ var BasicScene = Class.extend({
     init: function () {
         'use strict';
         // Create a scene, a camera, a light and a WebGL renderer with Three.JS
+        var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
         this.scene = new THREE.Scene();
         // CAMERAS
         this.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000);
         this.scene.add(this.camera);
-        this.camera1stPerson = new THREE.PerspectiveCamera(60, 1, 0.1, 10000);
+        this.camera1stPerson = new THREE.PerspectiveCamera(45, SCREEN_WIDTH/SCREEN_HEIGHT, 0.1, 10000);
         this.scene.add(this.camera1stPerson);
-        this.camera3rdPerson = new THREE.PerspectiveCamera(60, 1, 0.1, 10000);
-        this.scene.add(this.camera3rPerson);
+        this.camera3rdPerson = new THREE.PerspectiveCamera(45, SCREEN_WIDTH/SCREEN_HEIGHT, 0.1, 10000);
+        this.scene.add(this.camera3rdPerson);
         this.cameraTypes = ['3rd', '1st', 'top'];
         this.currentCamera = 2;
-        this.cameraChanged = false;
 
         // LIGHT
         this.light = new THREE.PointLight();
@@ -43,8 +43,6 @@ var BasicScene = Class.extend({
         // Start the events handlers
         this.setControls();
 
-        // flags
-        this.gameOver = false;
         this.levelCleared = false;
     },
     // Event handlers
@@ -202,9 +200,9 @@ var BasicScene = Class.extend({
         // Fit the initial visible area's height
             h = jQuery(window).height();
         // Update the renderer and the camera
-        var max = Math.max(h,800);
-        this.renderer.setSize(max, max);
-        this.camera.aspect = max / max;
+        // var max = Math.max(h,800);
+        this.renderer.setSize(w, h);
+        this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
     },
     // Updating the camera to follow and look at a given Object3D / Mesh
@@ -251,7 +249,7 @@ var BasicScene = Class.extend({
     frame: function () {
         'use strict';
         // Run a new step of the user's motions
-        if(this.user.alive){
+        if(this.user.alive && !this.levelCleared){
             this.user.motion();
             this.world.enemiesMove();
         }
@@ -269,6 +267,43 @@ var BasicScene = Class.extend({
             this.renderer.render(this.scene, this.camera1stPerson);
         }
 
-    }
+    },
+    isLevelCleared: function(){
+        var enemies = this.world.enemies;
+        var deadCount = 0;
+        for(var i = 0; i < enemies.length; i++){
+            if(!enemies[i].alive) deadCount++;
+        }
+        if(deadCount == enemies.length) this.levelCleared = true;
+        this.gameWon();
+        return true;
+    },
+    gameWon: function() {
+        console.log("game won");
+        $('<div id="message-outter"><div id="message-won"><h1>VITÓRIA!</h1><p>pressione ENTER para jogar de novo</p></div></div>').prependTo("#basic-scene").addClass('message-div');
+        jQuery(document).keydown(function (e) {
+            if(e.keyCode == 13){
+                window.location.reload(true);
+            }
+        });
+    },
+    gameOver: function () {
+        // // basicScene = new BasicScene();
+        // var message = document.createElement( 'div' );
+        // message.className = 'message';
+        // message.textContent = "GAME OVER";
+        // var object = new THREE.CSS3DObject( message );
+        // basicScene.scene.add(object);
+
+        $('<div id="message-outter"><div id="message-gameover"><h1>GAME OVER</h1><p>pressione ENTER para jogar de novo</p></div></div>').prependTo("#basic-scene").addClass('message-div');
+        jQuery(document).keydown(function (e) {
+            if(e.keyCode == 13){
+                window.location.reload(true);
+            }
+        });
+
+        console.log("game over");
+    },
+
 
 });

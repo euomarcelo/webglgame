@@ -12,7 +12,41 @@ body {
     z-index:-1;
 }
 
-.message {
+#basic-scene {
+    position: relative;
+}
+
+#message-outter {
+    position:relative;
+    width: 100%;
+    top: 100px;
+
+}
+#message-won {
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    color: #0F6093;
     font-size: 100px;
+    text-align: center;
     font-family: 'Alegreya SC', serif;
+    background: rgba(25, 25, 25, .5);
+}
+
+#message-gameover {
+    margin-left: auto;
+    margin-right: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    color: #C60000;
+    font-size: 100px;
+    text-align: center;
+    font-family: 'Alegreya SC', serif;
+    background: rgba(25, 25, 25, .5);
+}
+#message-gameover p, #message-won p {
+    font-size: 20px;
 }
