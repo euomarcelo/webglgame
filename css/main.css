@@ -16,6 +16,13 @@ body {
     position: relative;
 }
 
+#hudMap {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    background: rgba(15, 15, 15, .5);
+}
+
 #message-outter {
     position:relative;
     width: 100%;

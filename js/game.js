@@ -107,8 +107,10 @@ var BasicScene = Class.extend({
                     break;
                 case 70: // F WEAPON
                     if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
-                    self.keyAllowed [parseInt(e.keyCode)] = false;
-                    controls.weapon = true;
+                    else {
+                        self.keyAllowed [parseInt(e.keyCode)] = false;
+                        controls.weapon = true;
+                    }
                     break;
                 case 86: // V
                     if (self.keyAllowed [parseInt(e.keyCode)] === false) return;
@@ -166,8 +168,8 @@ var BasicScene = Class.extend({
                     controls.up = false;
                     break;
                 case 70:
-                    self.keyAllowed [parseInt(e.keyCode)] = true;
                     controls.weapon = false;
+                    self.keyAllowed [parseInt(e.keyCode)] = true;
                     break;
                 case 86:
                     self.keyAllowed [parseInt(e.keyCode)] = true;
@@ -245,13 +247,14 @@ var BasicScene = Class.extend({
             }
         }
     },
-    // Update and draw the scene
+    /* MAIN *********************************************************************/
     frame: function () {
         'use strict';
         // Run a new step of the user's motions
         if(this.user.alive && !this.levelCleared){
             this.user.motion();
             this.world.enemiesMove();
+            this.world.drawHud();
         }
 
         // Set the camera to look at our user's character
@@ -309,6 +312,5 @@ var BasicScene = Class.extend({
 
         // console.log("game over");
     },
-
 
 });

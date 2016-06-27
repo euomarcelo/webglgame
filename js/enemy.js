@@ -239,6 +239,7 @@ var Enemy = Class.extend({
 
         if (level[currIJ.i][currIJ.j] == 0){
             this.alive = false;
+            basicScene.world.participants[currIJ.i][currIJ.j] = 0;
             this.falling = true;
             return true;
         }

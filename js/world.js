@@ -55,6 +55,20 @@ var World = Class.extend({
             'ffffff': 5, //player
             '18bb3d': 6 //obstacle
         };
+        this.colorTableForHud = {
+            0:'91dff5', //water
+            1:'b6e71b', //ground
+            2:'8d0418', //hole
+            3:'ac7857', //crack
+            4:'ff1614', //enemy
+            5:'ffffff', //player
+            6:'18bb3d'  //obstacle
+        };
+        this.hudPixelData;
+        this.hudCanvas =  document.getElementById("hudMap");
+        this.hudContext = this.hudCanvas.getContext('2d');
+        this.hudUnit = 8;
+
         // some defaults
         this.groundCubeSize = 100;
         this.waterLevel = 100;
@@ -300,6 +314,7 @@ var World = Class.extend({
             var posJ = Math.round((obstacles[i].position.x + 1000)/100);
             if(level[posI][posJ] == 0){
                 obstacles[i].visible = false;
+                this.participants[posI][posJ] = 0;
             }
         }
     },
@@ -308,5 +323,89 @@ var World = Class.extend({
             this.enemies[i].move();
         }
     },
+    drawHud: function(){
+        var participants = this.participants;
+        var level = this.level;
+        var context = this.hudContext;
+        if(this.hudPixelData === undefined){
+            this.hudPixelDate = new Array(6);
+            for(var x = 0; x <= 6; x ++){
+                var imgData = context.createImageData(8, 8);
+                switch(x){
+                    case 0:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 145;
+                            imgData.data[i + 1] = 223;
+                            imgData.data[i + 2] = 245;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 1:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 182;
+                            imgData.data[i + 1] = 231;
+                            imgData.data[i + 2] = 27;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 2:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 141;
+                            imgData.data[i + 1] = 4;
+                            imgData.data[i + 2] = 24;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 3:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 172;
+                            imgData.data[i + 1] = 120;
+                            imgData.data[i + 2] = 87;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 4:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 255;
+                            imgData.data[i + 1] = 22;
+                            imgData.data[i + 2] = 20;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 5:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 255;
+                            imgData.data[i + 1] = 255;
+                            imgData.data[i + 2] = 255;
+                            imgData.data[i + 3] = 255;
+                        }
+                        break;
+                    case 6:
+                        for (var i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i + 0] = 24;
+                            imgData.data[i + 1] = 187;
+                            imgData.data[i + 2] = 0;
+                            imgData.data[i + 3] = 61;
+                        }
+                        break;
+                }
+                this.hudPixelDate[x] = imgData;
+            }
+        }
+
+        for(var i = 0; i < 20; i+=1){
+            for(var j = 0; j < 20; j+=1){
+                var pcode = participants[i][j];
+                var lcode = level[i][j];
+                if(pcode != 0){
+                    context.putImageData(this.hudPixelDate[pcode], i*8, j*8);
+                }
+                else {
+                    context.putImageData(this.hudPixelDate[lcode], i*8, j*8);
+                }
+            }
+        }
+        // hudContext.rotate(Math.PI/2);
+    }
 
 });

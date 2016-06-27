@@ -107,7 +107,10 @@ var Character = Class.extend({
                 this.lookDirection.set(0,0,-1);
             }
         }
-        if(controls.weapon) this.fireWeapon();
+        if(controls.weapon) {
+            console.log(controls.weapon);
+            this.fireWeapon();
+        }
     },
     // Process the character motions
     motion: function () {
