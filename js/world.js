@@ -102,11 +102,10 @@ var World = Class.extend({
         for (var i = 0; i < 20; i++) {
             this.floorCubes[i] = new Array(20);
         }
-
-        // Set the "world" modelisation object
         this.mesh = new THREE.Object3D();
         this.participants = participants;
         this.level = level;
+        this.worldReady = false;
         this.createLevel();
     },
     levelSetupPit: function(){
@@ -204,7 +203,7 @@ var World = Class.extend({
             self.levelSetupPit();
             self.levelSetupObstacles();
             self.levelSetupEnemies();
-
+            self.worldReady = true;
         };
 
     },

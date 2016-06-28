@@ -252,7 +252,7 @@ var BasicScene = Class.extend({
     frame: function () {
         'use strict';
         // Run a new step of the user's motions
-        if(this.user.alive && !this.levelCleared){
+        if(this.world.worldReady && this.user.alive && !this.levelCleared){
             this.user.motion();
             this.world.enemiesMove();
             this.world.drawHud();
