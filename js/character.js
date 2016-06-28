@@ -323,11 +323,9 @@ var Character = Class.extend({
         // console.log("angle:", angle);
         // If we're doing more than a 180°
         if (Math.abs(difference) > Math.PI) {
-            // We proceed to a direct 360° rotation in the opposite way
+            // 360° rotation in the opposite way
             if (difference > 0) { this.mesh.rotation.y += 2 * Math.PI; } else { this.mesh.rotation.y -= 2 * Math.PI; }
-            // And we set a new smarter (because shorter) difference
             difference = angle - this.mesh.rotation.y;
-            // In short : we make sure not to turn "left" to go "right"
         }
 
         // Now if we haven't reach our target angle

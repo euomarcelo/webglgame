@@ -9,7 +9,6 @@ var Enemy = Class.extend({
         var head = new THREE.SphereGeometry(50, 16, 16),
             hand = new THREE.SphereGeometry(8, 8, 8),
             foot = new THREE.SphereGeometry(16, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-            nose = new THREE.SphereGeometry(4, 8, 8),
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args);
         // Set the character modelisation object
@@ -43,12 +42,6 @@ var Enemy = Class.extend({
         this.feet.right.rotation.y = Math.PI / 4;
         this.mesh.add(this.feet.left);
         this.mesh.add(this.feet.right);
-        // Set and add its nose
-        // this.nose = new THREE.Mesh(nose, material);
-        // this.nose.position.y = 0;
-        // this.nose.position.z = 32;
-        // this.mesh.add(this.nose);
-        // Set the vector of the current motion
         this.direction = new THREE.Vector3(0, 0, 0);
         // Set the current animation step
         this.step = 0;
@@ -91,7 +84,6 @@ var Enemy = Class.extend({
                 this.defineDirectionTowardPlayer();
             }
             else if(isItColliding){
-                console.log("HERE");
                 this.defineNonCollidingRandomDirectionToGo();
             }
             else if ((this.positionToGo == undefined) ||
@@ -150,7 +142,6 @@ var Enemy = Class.extend({
             collisions = this.caster3.intersectObjects(obstacles);
             // And disable that direction if we do
             if (collisions.length > 0 && collisions[0].distance <= 50) {
-                console.log("Enemy is colliding");
                 return true;
             }
         }
@@ -335,7 +326,6 @@ var Enemy = Class.extend({
             this.mesh.position.y += -10;
         }
         else {
-            console.log("NOT FALLING");
             this.falling = false;
             basicScene.isLevelCleared();
             console.log("DED X_X");
