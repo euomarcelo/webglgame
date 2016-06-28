@@ -22,7 +22,7 @@ var World = Class.extend({
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
             ],
             participants = [
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -44,7 +44,7 @@ var World = Class.extend({
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
             ];
         this.colorTableForLevelCreation = {
             '91dff5': 0, //water
@@ -55,16 +55,6 @@ var World = Class.extend({
             'ffffff': 5, //player
             '18bb3d': 6 //obstacle
         };
-        this.colorTableForHud = {
-            0:'91dff5', //water
-            1:'b6e71b', //ground
-            2:'8d0418', //hole
-            3:'ac7857', //crack
-            4:'ff1614', //enemy
-            5:'ffffff', //player
-            6:'18bb3d'  //obstacle
-        };
-        this.hudPixelData;
         this.hudCanvas =  document.getElementById("hudMap");
         this.hudContext = this.hudCanvas.getContext('2d');
         this.hudUnit = 8;
@@ -72,15 +62,15 @@ var World = Class.extend({
         // some defaults
         this.groundCubeSize = 100;
         this.waterLevel = 100;
-        this.obstacles = new Array();
-        this.enemies = new Array();
-        this.enemysMeshes = new Array();
+        this.obstacles = [];
+        this.enemies = [];
+        this.enemysMeshes = [];
 
         // Set the material
         this.cubeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/seamless-grass.jpg') } );
         this.holeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/holetexture.png') } );
         this.rachMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('./images/rachadura.png') } );
-        this.ground2 = new Array();
+        this.ground2 = [];
         this.material = new THREE.MeshLambertMaterial(args);
         this.groundCubeGeometry = new THREE.CubeGeometry( this.groundCubeSize, this.waterLevel, this.groundCubeSize );
         this.obstacleGeometry = new THREE.CubeGeometry( this.groundCubeSize, this.waterLevel, this.groundCubeSize);
@@ -117,20 +107,20 @@ var World = Class.extend({
     levelSetupFloor: function(){
         'use strict';
         // Set the ground
-
+        var newBlock;
 
         // set map blocks, holes and cracks
         for(var i = 0; i < this.level.length; i++){
             for(var j = 0; j < this.level.length; j++){
                 if(this.level[i][j] != 0) {
                     if (this.level[i][j] == 1) { //ground
-                        var newBlock = this.groundCube.clone();
+                        newBlock = this.groundCube.clone();
                     }
                     else if (this.level[i][j] == 2) { // hole
-                        var newBlock = this.holeCube.clone();
+                        newBlock = this.holeCube.clone();
                     }
                     else if (this.level[i][j] == 3) { // crack
-                        var newBlock = this.rachCube.clone();
+                        newBlock = this.rachCube.clone();
                     }
                     newBlock.position.set((j * this.groundCubeSize) - 1000,
                         -this.waterLevel,
@@ -326,38 +316,39 @@ var World = Class.extend({
         var participants = this.participants;
         var level = this.level;
         var context = this.hudContext;
+        var i;
         if(this.hudPixelData === undefined){
             this.hudPixelDate = new Array(6);
             for(var x = 0; x <= 6; x ++){
                 var imgData = context.createImageData(8, 8);
                 switch(x){
                     case 0:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 145;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 145;
                             imgData.data[i + 1] = 223;
                             imgData.data[i + 2] = 245;
                             imgData.data[i + 3] = 255;
                         }
                         break;
                     case 1:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 182;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 182;
                             imgData.data[i + 1] = 231;
                             imgData.data[i + 2] = 27;
                             imgData.data[i + 3] = 255;
                         }
                         break;
                     case 2:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 141;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 141;
                             imgData.data[i + 1] = 4;
                             imgData.data[i + 2] = 24;
                             imgData.data[i + 3] = 255;
                         }
                         break;
                     case 3:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 172;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 172;
                             imgData.data[i + 1] = 120;
                             imgData.data[i + 2] = 87;
                             imgData.data[i + 3] = 255;
@@ -365,23 +356,23 @@ var World = Class.extend({
                         break;
                     case 4:
                         for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 255;
+                            imgData.data[i] = 255;
                             imgData.data[i + 1] = 22;
                             imgData.data[i + 2] = 20;
                             imgData.data[i + 3] = 255;
                         }
                         break;
                     case 5:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 255;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 255;
                             imgData.data[i + 1] = 255;
                             imgData.data[i + 2] = 255;
                             imgData.data[i + 3] = 255;
                         }
                         break;
                     case 6:
-                        for (var i = 0; i < imgData.data.length; i += 4) {
-                            imgData.data[i + 0] = 24;
+                        for (i = 0; i < imgData.data.length; i += 4) {
+                            imgData.data[i] = 24;
                             imgData.data[i + 1] = 187;
                             imgData.data[i + 2] = 0;
                             imgData.data[i + 3] = 61;

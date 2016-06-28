@@ -112,7 +112,6 @@ var Character = Class.extend({
             }
         }
         if(controls.weapon) {
-            console.log(controls.weapon);
             this.fireWeapon();
         }
     },
@@ -139,8 +138,6 @@ var Character = Class.extend({
     crushStone: function (controls){
         'use strict';
         var space = controls.space;
-        // var space = controls.space ? true : false;
-        // console.log("space:", space);
         if(this.alive && space){
             var posToDig = this.canDigHere();
 
@@ -155,11 +152,9 @@ var Character = Class.extend({
                 var world = basicScene.world;
                 world.regenerateFloodMatrix();
                 var unfilledIJ = world.getUnfilledFloodPosition();
-                console.log("1st pass");
                 world.floodFill(unfilledIJ[0], unfilledIJ[1], color1, color2);
-                var unfilledIJ = world.getUnfilledFloodPosition();
+                unfilledIJ = world.getUnfilledFloodPosition();
                 if(unfilledIJ.length > 0){ // existe uma divisão. uma deve ser desmoronada
-                    console.log("2nd pass");
                     world.floodFill(unfilledIJ[0], unfilledIJ[1], color2, color1);
                     // count colors 1 and 2 in flood matrix
                     var color1Count = 0, color2Count = 0;
@@ -169,8 +164,6 @@ var Character = Class.extend({
                             else if(world.floodMatrix[i][j] == color2) color2Count++;
                         }
                     }
-                    console.log("color1Count", color1Count);
-                    console.log("color2Count", color2Count);
                     // earthquake strikes floodfilled blocks with less area
                     if(color1Count < color2Count){
                         world.landslide(1);
@@ -202,7 +195,7 @@ var Character = Class.extend({
             x3 = cubeImOver.i - 3; y3 = cubeImOver.j;
         }
         else if(directionImFacing == "E"){
-            x1 = cubeImOver.i; y1 = cubeImOver.j - 1
+            x1 = cubeImOver.i; y1 = cubeImOver.j - 1;
             x2 = cubeImOver.i; y2 = (cubeImOver.j - 2);
             x3 = cubeImOver.i; y3 = (cubeImOver.j - 3);
         }
@@ -237,7 +230,6 @@ var Character = Class.extend({
 
         if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > distance)){
             if(this.alive && this.mesh.position.y > -300) this.fall();
-            // console.log(this.mesh.position.y);
             else {
                 this.alive = false;
                 basicScene.gameOver();
@@ -251,24 +243,25 @@ var Character = Class.extend({
         // Maximum distance from the origin before we consider collision
             distance = 32,
         // Get the obstacles array from our world
-            obstacles = basicScene.world.getObstacles();
+            obstacles = basicScene.world.getObstacles(),
+            raysFront = [], raysBack = [];
 
         var direction = this.getDirectionThatIsFacing();
         if(direction == "N"){
-            var raysFront =  [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
-            var raysBack =  [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1)];
+            raysFront =  [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
+            raysBack =  [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1)];
         }
         else if(direction == "S"){
-            var raysFront = [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
-            var raysBack = [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1)];
+            raysFront = [new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, -1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)];
+            raysBack = [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 1), new THREE.Vector3(-1, 0, 1)];
         }
         else if(direction == "E"){
-            var raysFront = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
-            var raysBack = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1)];
+            raysFront = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
+            raysBack = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1)];
         }
         else if(direction == "W"){
-            var raysFront = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
-            var raysBack = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1)];
+            raysFront = [new THREE.Vector3(1, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, -1)];
+            raysBack = [new THREE.Vector3(-1, 0, -1), new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-1, 0, 1)];
         }
 
         for (var i = 0; i < raysFront.length; i += 1) {
@@ -281,7 +274,7 @@ var Character = Class.extend({
                 this.direction.z = 0;
             }
         }
-        for (var i = 0; i < raysBack.length; i += 1) {
+        for (i = 0; i < raysBack.length; i += 1) {
             // We reset the raycaster to this direction
             this.caster.set(this.mesh.position, raysBack[i]);
             // Test if we intersect with any obstacle mesh
@@ -295,20 +288,11 @@ var Character = Class.extend({
     collisionWithEnemies: function(){
         'use strict';
         var enemies = basicScene.world.enemies;
-        var currIJ = this.getCubeposition();
         for(var i = 0; i < enemies.length; i++){
-            // var enemyIJ = enemies[i].getCubeposition();
-            // if(currIJ.i == enemyIJ.i && currIJ.j == enemyIJ.j){
-            //     console.log("UR DED X_X");
-            //     this.alive = false;
-            //     basicScene.gameOver();
-            // }
             for(var j = 0; j < this.rays.length; j++){
                 this.caster.set(enemies[i].mesh.position, this.rays[j]);
                 var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
-                // And disable that direction if we do
-                if (collisions.length > 0 && collisions[0].distance <= 45) {
-                    console.log("UR DED X_X");
+                if (collisions.length > 0 && collisions[0].distance <= 55) {
                     this.alive = false;
                     basicScene.gameOver();
                 }
@@ -321,15 +305,12 @@ var Character = Class.extend({
         // Set the direction's angle, and the difference between it and our Object3D's current rotation
         var angle = Math.atan2(this.lookDirection.x, this.lookDirection.z),
             difference = angle - this.mesh.rotation.y;
-        // console.log("mesh rotation:", this.mesh.rotation.y);
-        // console.log("angle:", angle);
         // If we're doing more than a 180°
         if (Math.abs(difference) > Math.PI) {
             // 360° rotation in the opposite way
             if (difference > 0) { this.mesh.rotation.y += 2 * Math.PI; } else { this.mesh.rotation.y -= 2 * Math.PI; }
             difference = angle - this.mesh.rotation.y;
         }
-
         // Now if we haven't reach our target angle
         if (difference !== 0) {
             // We slightly get closer to it
@@ -392,20 +373,19 @@ var Character = Class.extend({
     },
     fireWeapon: function(){
         var time = Math.floor(Date.now() / 1000) - this.weaponTime;
-        console.log(time);
         if(this.alive && (time > 2)){
             var enemies = basicScene.world.enemies;
-            var currIJ = this.getCubeposition();
             var direction =  this.getDirectionThatIsFacing();
-
+            var collisions, enemyIJ;
+            var x;
             switch(direction){
                 case "N":
-                    for(var x = 0; x < enemies.length; x++) {
+                    for(x = 0; x < enemies.length; x++) {
                         this.caster.set(this.mesh.position, this.rays[0]);
-                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        collisions = this.caster.intersectObjects(enemies[x].mesh.children);
                         // And disable that direction if we do
                         if (collisions.length > 0 && collisions[0].distance <= 232) {
-                            var enemyIJ = enemies[x].getCubeposition();
+                            enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i + 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 2, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
@@ -418,12 +398,12 @@ var Character = Class.extend({
                     }
                     break;
                 case "S":
-                    for(var x = 0; x < enemies.length; x++) {
+                    for(x = 0; x < enemies.length; x++) {
                         this.caster.set(this.mesh.position, this.rays[4]);
-                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        collisions = this.caster.intersectObjects(enemies[x].mesh.children);
                         // And disable that direction if we do
                         if (collisions.length > 0 && collisions[0].distance <= 232) {
-                            var enemyIJ = enemies[x].getCubeposition();
+                            enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i - 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 2, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
@@ -436,12 +416,12 @@ var Character = Class.extend({
                     }
                     break;
                 case "W":
-                    for(var x = 0; x < enemies.length; x++) {
+                    for(x = 0; x < enemies.length; x++) {
                         this.caster.set(this.mesh.position, this.rays[2]);
-                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        collisions = this.caster.intersectObjects(enemies[x].mesh.children);
                         // And disable that direction if we do
                         if (collisions.length > 0 && collisions[0].distance <= 232) {
-                            var enemyIJ = enemies[x].getCubeposition();
+                            enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 2, direction);
                             }
@@ -453,12 +433,12 @@ var Character = Class.extend({
                     }
                     break;
                 case "E":
-                    for(var x = 0; x < enemies.length; x++) {
+                    for(x = 0; x < enemies.length; x++) {
                         this.caster.set(this.mesh.position, this.rays[6]);
-                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        collisions = this.caster.intersectObjects(enemies[x].mesh.children);
                         // And disable that direction if we do
                         if (collisions.length > 0 && collisions[0].distance <= 232) {
-                            var enemyIJ = enemies[x].getCubeposition();
+                            enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 2, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
