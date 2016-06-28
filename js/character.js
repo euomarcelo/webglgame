@@ -396,11 +396,21 @@ var Character = Class.extend({
             var currIJ = this.getCubeposition();
             var direction =  this.getDirectionThatIsFacing();
 
-            for(var x = 0; x < enemies.length; x++){
-                var enemyIJ = enemies[x].getCubeposition();
-                switch(direction){
-                    case "N":
-                        if((currIJ.i + 1 == enemyIJ.i || currIJ.i + 2 == enemyIJ.i) && currIJ.j == enemyIJ.j){   /* enemy is north within 2 squares */
+            // this.caster.set(enemies[i].mesh.position, this.rays[j]);
+            // var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
+            // // And disable that direction if we do
+            // if (collisions.length > 0 && collisions[0].distance <= 200) {
+            //     // fire weapon
+            // }
+            // var enemyIJ = enemies[x].getCubeposition();
+            switch(direction){
+                case "N":
+                    for(var x = 0; x < enemies.length; x++) {
+                        this.caster.set(this.mesh.position, this.rays[0]);
+                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        // And disable that direction if we do
+                        if (collisions.length > 0 && collisions[0].distance <= 232) {
+                            var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i + 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 2, enemyIJ.j, direction);
                             }
@@ -408,9 +418,15 @@ var Character = Class.extend({
                                 enemies[x].pushedTo(enemyIJ.i + 1, enemyIJ.j, direction);
                             }
                         }
-                        break;
-                    case "S":
-                        if((currIJ.i - 1 == enemyIJ.i || currIJ.i - 2 == enemyIJ.i) && currIJ.j == enemyIJ.j){   /* enemy is north within 2 squares */
+                    }
+                    break;
+                case "S":
+                    for(var x = 0; x < enemies.length; x++) {
+                        this.caster.set(this.mesh.position, this.rays[4]);
+                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        // And disable that direction if we do
+                        if (collisions.length > 0 && collisions[0].distance <= 232) {
+                            var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i - 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 2, enemyIJ.j, direction);
                             }
@@ -418,9 +434,15 @@ var Character = Class.extend({
                                 enemies[x].pushedTo(enemyIJ.i - 1, enemyIJ.j, direction);
                             }
                         }
-                        break;
-                    case "W":
-                        if((currIJ.j + 1 == enemyIJ.j || currIJ.j + 2 == enemyIJ.j) && currIJ.i == enemyIJ.i){   /* enemy is north within 2 squares */
+                    }
+                    break;
+                case "W":
+                    for(var x = 0; x < enemies.length; x++) {
+                        this.caster.set(this.mesh.position, this.rays[2]);
+                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        // And disable that direction if we do
+                        if (collisions.length > 0 && collisions[0].distance <= 232) {
+                            var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 2, direction);
                             }
@@ -428,9 +450,15 @@ var Character = Class.extend({
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 1, direction);
                             }
                         }
-                        break;
-                    case "E":
-                        if((currIJ.j - 1 == enemyIJ.j || currIJ.j - 2 == enemyIJ.j) && currIJ.i == enemyIJ.i){   /* enemy is north within 2 squares */
+                    }
+                    break;
+                case "E":
+                    for(var x = 0; x < enemies.length; x++) {
+                        this.caster.set(this.mesh.position, this.rays[6]);
+                        var collisions = this.caster.intersectObjects(enemies[x].mesh.children);
+                        // And disable that direction if we do
+                        if (collisions.length > 0 && collisions[0].distance <= 232) {
+                            var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 2, direction);
                             }
@@ -438,8 +466,9 @@ var Character = Class.extend({
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 1, direction);
                             }
                         }
-                        break;
-                }
+                    }
+                    break;
+
 
             }
         }
