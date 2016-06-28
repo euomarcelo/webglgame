@@ -450,8 +450,6 @@ var Character = Class.extend({
                         }
                     }
                     break;
-
-
             }
         }
     }

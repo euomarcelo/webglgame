@@ -21,12 +21,17 @@ body {
     top: 50px;
     right: 50px;
     background: rgba(15, 15, 15, .5);
+    z-index: 0;
+    opacity: 0.4;
+
+    transform: rotate(90deg) scaleX(-1);
 }
 
 #message-outter {
     position:relative;
     width: 100%;
-    top: 100px;
+    top: 10px;
+    z-index: 1;
 
 }
 #message-won {
@@ -36,7 +41,7 @@ body {
     left: 0;
     right: 0;
     color: #0F6093;
-    font-size: 100px;
+    font-size: 80px;
     text-align: center;
     font-family: 'Alegreya SC', serif;
     background: rgba(25, 25, 25, .5);
@@ -49,7 +54,7 @@ body {
     left: 0;
     right: 0;
     color: #C60000;
-    font-size: 100px;
+    font-size: 80px;
     text-align: center;
     font-family: 'Alegreya SC', serif;
     background: rgba(25, 25, 25, .5);
