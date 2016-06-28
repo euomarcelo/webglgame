@@ -46,6 +46,8 @@ var Character = Class.extend({
         this.nose.position.y = 0;
         this.nose.position.z = 32;
         this.mesh.add(this.nose);
+        this.mesh.position.setY(63);
+
         // Set the vector of the current motion
         this.direction = new THREE.Vector3(0, 0, 0);
         // Set the current animation step
@@ -370,7 +372,7 @@ var Character = Class.extend({
     },
     fall: function(){
         'use strict';
-        this.mesh.position.y += -10;
+        this.mesh.position.y += -8;
     },
     getDirectionThatIsFacing: function(){
         if(this.lookDirection.x == 0 && this.lookDirection.z == 1) return "N";

@@ -34,7 +34,7 @@ var BasicScene = Class.extend({
             color: 0xFFFC19 //0x7A43B6
         });
         this.scene.add(this.user.mesh);
-        this.user.mesh.position.setY(100);
+
         // Define the size of the renderer
         this.setAspect();
         // Insert the renderer in the container
