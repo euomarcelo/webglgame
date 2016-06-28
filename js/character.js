@@ -67,6 +67,8 @@ var Character = Class.extend({
         // flags
         this.alive = true;
 
+        this.weaponTime = Math.floor(Date.now() / 1000);
+
         // And the "RayCaster", able to test for intersections
         this.lookDirection = new THREE.Vector3(0, 0, 1);
         this.caster = new THREE.Raycaster();
@@ -389,7 +391,9 @@ var Character = Class.extend({
         else if(this.lookDirection.x == 1 && this.lookDirection.z == 0) return "W";
     },
     fireWeapon: function(){
-        if(this.alive){
+        var time = Math.floor(Date.now() / 1000) - this.weaponTime;
+        console.log(time);
+        if(this.alive && (time > 2)){
             var enemies = basicScene.world.enemies;
             var currIJ = this.getCubeposition();
             var direction =  this.getDirectionThatIsFacing();
@@ -404,9 +408,11 @@ var Character = Class.extend({
                             var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i + 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 2, enemyIJ.j, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i + 1, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 1, enemyIJ.j, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                         }
                     }
@@ -420,9 +426,11 @@ var Character = Class.extend({
                             var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i - 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 2, enemyIJ.j, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i - 1, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 1, enemyIJ.j, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                         }
                     }
@@ -439,6 +447,7 @@ var Character = Class.extend({
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 1)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 1, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                         }
                     }
@@ -452,9 +461,11 @@ var Character = Class.extend({
                             var enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 2, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 1)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 1, direction);
+                                this.weaponTime = Math.floor(Date.now() / 1000);
                             }
                         }
                     }
