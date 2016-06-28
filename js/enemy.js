@@ -6,7 +6,7 @@ var Enemy = Class.extend({
     init: function (args) {
         'use strict';
         // Set the different geometries composing the humanoid
-        var head = new THREE.SphereGeometry(32, 16, 16),
+        var head = new THREE.SphereGeometry(50, 16, 16),
             hand = new THREE.SphereGeometry(8, 8, 8),
             foot = new THREE.SphereGeometry(16, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2),
             nose = new THREE.SphereGeometry(4, 8, 8),
@@ -24,9 +24,9 @@ var Enemy = Class.extend({
             left: new THREE.Mesh(hand, material),
             right: new THREE.Mesh(hand, material)
         };
-        this.hands.left.position.x = -40;
+        this.hands.left.position.x = -54;
         this.hands.left.position.y = -8;
-        this.hands.right.position.x = 40;
+        this.hands.right.position.x = 54;
         this.hands.right.position.y = -8;
         this.mesh.add(this.hands.left);
         this.mesh.add(this.hands.right);
@@ -72,7 +72,7 @@ var Enemy = Class.extend({
         this.caster2 = new THREE.Raycaster();
         this.caster3 = new THREE.Raycaster();
 
-        this.speed = 3;
+        this.speed = 1.8;
         this.speedOnCrack = 0.3;
         this.falling = false;
         this.positionToGo;
@@ -149,7 +149,7 @@ var Enemy = Class.extend({
             // Test if we intersect with any obstacle mesh
             collisions = this.caster3.intersectObjects(obstacles);
             // And disable that direction if we do
-            if (collisions.length > 0 && collisions[0].distance <= 32) {
+            if (collisions.length > 0 && collisions[0].distance <= 50) {
                 console.log("Enemy is colliding");
                 return true;
             }

@@ -305,7 +305,7 @@ var Character = Class.extend({
                 this.caster.set(enemies[i].mesh.position, this.rays[j]);
                 var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
                 // And disable that direction if we do
-                if (collisions.length > 0 && collisions[0].distance <= 32) {
+                if (collisions.length > 0 && collisions[0].distance <= 45) {
                     console.log("UR DED X_X");
                     this.alive = false;
                     basicScene.gameOver();
