@@ -295,11 +295,21 @@ var Character = Class.extend({
         var enemies = basicScene.world.enemies;
         var currIJ = this.getCubeposition();
         for(var i = 0; i < enemies.length; i++){
-            var enemyIJ = enemies[i].getCubeposition();
-            if(currIJ.i == enemyIJ.i && currIJ.j == enemyIJ.j){
-                console.log("UR DED X_X");
-                this.alive = false;
-                basicScene.gameOver();
+            // var enemyIJ = enemies[i].getCubeposition();
+            // if(currIJ.i == enemyIJ.i && currIJ.j == enemyIJ.j){
+            //     console.log("UR DED X_X");
+            //     this.alive = false;
+            //     basicScene.gameOver();
+            // }
+            for(var j = 0; j < this.rays.length; j++){
+                this.caster.set(enemies[i].mesh.position, this.rays[j]);
+                var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
+                // And disable that direction if we do
+                if (collisions.length > 0 && collisions[0].distance <= 32) {
+                    console.log("UR DED X_X");
+                    this.alive = false;
+                    basicScene.gameOver();
+                }
             }
         }
     },
