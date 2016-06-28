@@ -189,6 +189,8 @@ var World = Class.extend({
                     }
                 }
             }
+            participants[10][10] = 5;
+            participants[10][9] = 0;
             self.levelSetupFloor();
             self.levelSetupPit();
             self.levelSetupObstacles();

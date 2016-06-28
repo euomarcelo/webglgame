@@ -288,11 +288,17 @@ var Character = Class.extend({
     collisionWithEnemies: function(){
         'use strict';
         var enemies = basicScene.world.enemies;
+        var rays = this.rays;
         for(var i = 0; i < enemies.length; i++){
             for(var j = 0; j < this.rays.length; j++){
-                this.caster.set(enemies[i].mesh.position, this.rays[j]);
-                var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
-                if (collisions.length > 0 && collisions[0].distance <= 55) {
+                this.caster.set(enemies[i].mesh.position, rays[j]);
+                var collisions = this.caster.intersectObjects(this.mesh.children);
+                if (collisions.length > 0 && j % 2 == 0 && collisions[0].distance <= 50 ) {
+                    this.alive = false;
+                    basicScene.gameOver();
+                }
+                else if (collisions.length > 0 && j % 2 == 1 && collisions[0].distance <= 140 ) {
+                    console.log("hey");
                     this.alive = false;
                     basicScene.gameOver();
                 }

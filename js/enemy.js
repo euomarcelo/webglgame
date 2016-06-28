@@ -57,7 +57,7 @@ var Enemy = Class.extend({
             new THREE.Vector3(-1, 0, 1)
         ];
 
-        this.mesh.position.setY(8);
+        this.mesh.position.setY(7);
 
         this.alive = true;
         this.lookDirection = new THREE.Vector3(0, 0, 1);
@@ -167,9 +167,6 @@ var Enemy = Class.extend({
         else if(jDelta < 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j -1)){
             this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
             this.directionToGo = "E";
-        }
-        else {
-            this.defineRandomDirectionToGo();
         }
     },
     defineRandomDirectionToGo: function () {
