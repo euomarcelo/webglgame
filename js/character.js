@@ -396,13 +396,6 @@ var Character = Class.extend({
             var currIJ = this.getCubeposition();
             var direction =  this.getDirectionThatIsFacing();
 
-            // this.caster.set(enemies[i].mesh.position, this.rays[j]);
-            // var collisions = this.caster.intersectObjects([this.mesh.children[0]]);
-            // // And disable that direction if we do
-            // if (collisions.length > 0 && collisions[0].distance <= 200) {
-            //     // fire weapon
-            // }
-            // var enemyIJ = enemies[x].getCubeposition();
             switch(direction){
                 case "N":
                     for(var x = 0; x < enemies.length; x++) {

@@ -44,10 +44,10 @@ var Enemy = Class.extend({
         this.mesh.add(this.feet.left);
         this.mesh.add(this.feet.right);
         // Set and add its nose
-        this.nose = new THREE.Mesh(nose, material);
-        this.nose.position.y = 0;
-        this.nose.position.z = 32;
-        this.mesh.add(this.nose);
+        // this.nose = new THREE.Mesh(nose, material);
+        // this.nose.position.y = 0;
+        // this.nose.position.z = 32;
+        // this.mesh.add(this.nose);
         // Set the vector of the current motion
         this.direction = new THREE.Vector3(0, 0, 0);
         // Set the current animation step
@@ -68,11 +68,11 @@ var Enemy = Class.extend({
 
         this.alive = true;
         this.lookDirection = new THREE.Vector3(0, 0, 1);
-        this.rotationDifference = 0;
         this.caster = new THREE.Raycaster(); // And the "RayCaster", able to test for intersections
         this.caster2 = new THREE.Raycaster();
+        this.caster3 = new THREE.Raycaster();
 
-        this.speed = 1;
+        this.speed = 3;
         this.speedOnCrack = 0.3;
         this.falling = false;
         this.positionToGo;
@@ -82,13 +82,17 @@ var Enemy = Class.extend({
     },
     move: function(){
         'use strict';
-        var level = basicScene.world.level;
         var participants = basicScene.world.participants;
         var currIJ = this.getCubeposition();
+        var isItColliding = this.isColliding();
         if(this.alive && !this.isOverTheWater()) {
             // define direction to go
-            if (!this.gotPushed && this.isPlayerNear()) {
+            if (!this.gotPushed && (!isItColliding && (this.isPlayerNear()))) {
                 this.defineDirectionTowardPlayer();
+            }
+            else if(isItColliding){
+                console.log("HERE");
+                this.defineNonCollidingRandomDirectionToGo();
             }
             else if ((this.positionToGo == undefined) ||
                 (currIJ.i == this.positionToGo.i && currIJ.j == this.positionToGo.j)) { // only change direction if enemy got to where he was heading
@@ -126,6 +130,32 @@ var Enemy = Class.extend({
             if(this.falling) this.fall();
         }
     },
+    isColliding: function(){
+        var obstacles = basicScene.world.getObstacles();
+        var collisions;
+        var rays =[
+            new THREE.Vector3(0, 0, 1),
+            new THREE.Vector3(1, 0, 1),
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(1, 0, -1),
+            new THREE.Vector3(0, 0, -1),
+            new THREE.Vector3(-1, 0, -1),
+            new THREE.Vector3(-1, 0, 0),
+            new THREE.Vector3(-1, 0, 1)
+        ];
+        for (var i = 0; i < 8; i ++) {
+            // We reset the raycaster to this direction
+            this.caster3.set(this.mesh.position, rays[i]);
+            // Test if we intersect with any obstacle mesh
+            collisions = this.caster3.intersectObjects(obstacles);
+            // And disable that direction if we do
+            if (collisions.length > 0 && collisions[0].distance <= 32) {
+                console.log("Enemy is colliding");
+                return true;
+            }
+        }
+        return false;
+    },
     defineDirectionTowardPlayer: function(){
         var playerPosition = basicScene.user.getCubeposition();
         var currIJ = this.getCubeposition();
@@ -146,6 +176,9 @@ var Enemy = Class.extend({
         else if(jDelta < 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j -1)){
             this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
             this.directionToGo = "E";
+        }
+        else {
+            this.defineRandomDirectionToGo();
         }
     },
     defineRandomDirectionToGo: function () {
@@ -188,7 +221,56 @@ var Enemy = Class.extend({
                     break;
             }
             loopCount++;
-            if(loopCount > 20) break;
+            if(loopCount > 128){
+                this.positionToGo = {i: currIJ.i, j: currIJ.j}; // stay in place if surrounded
+                break;
+            }
+        }
+    },
+    defineNonCollidingRandomDirectionToGo: function(){
+        'use strict';
+        var directions = ["N", "S", "W", "E"];
+        var currIJ = this.getCubeposition();
+
+        var directionIsInvalid = true;
+        var loopCount = 0;
+        while(directionIsInvalid) {
+            var randomDirection = directions[Math.floor(Math.random() * 4)];
+            switch (randomDirection) {
+                case "N":
+                    if (this.directionToGo != "N" && this.isDirectionValidToGo(currIJ.i + 1, currIJ.j)) {
+                        this.positionToGo = {i: currIJ.i + 1, j: currIJ.j};
+                        this.directionToGo = "N";
+                        directionIsInvalid = false;
+                    }
+                    break;
+                case "S":
+                    if (this.directionToGo != "S" && this.isDirectionValidToGo(currIJ.i - 1, currIJ.j)) {
+                        this.positionToGo = {i: currIJ.i - 1, j: currIJ.j};
+                        this.directionToGo = "S";
+                        directionIsInvalid = false;
+                    }
+                    break;
+                case "W":
+                    if (this.directionToGo != "W" && this.isDirectionValidToGo(currIJ.i, currIJ.j + 1)) {
+                        this.positionToGo = {i: currIJ.i, j: currIJ.j + 1};
+                        this.directionToGo = "W";
+                        directionIsInvalid = false;
+                    }
+                    break;
+                case "E":
+                    if (this.directionToGo != "E" && this.isDirectionValidToGo(currIJ.i, currIJ.j - 1)) {
+                        this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
+                        this.directionToGo = "E";
+                        directionIsInvalid = false;
+                    }
+                    break;
+            }
+            loopCount++;
+            if(loopCount > 128){
+                this.positionToGo = {i: currIJ.i, j: currIJ.j}; // stay in place if surrounded
+                break;
+            }
         }
     },
     getCubeposition: function(){
@@ -200,6 +282,7 @@ var Enemy = Class.extend({
     isDirectionValidToGo: function(i, j){
         var level = basicScene.world.level;
         var participants = basicScene.world.participants;
+        var obstacles = basicScene.world.getObstacles();
 
         if (
             (i > 0 && i < 19 && j > 0 && j < 19) &&
@@ -211,6 +294,7 @@ var Enemy = Class.extend({
         }
         else {
             return false;
+
         }
     },
     isPlayerNear: function(){
