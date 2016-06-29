@@ -6,27 +6,28 @@ var Enemy = Class.extend({
     init: function (args) {
         'use strict';
         // Set the different geometries composing the humanoid
-        var head = new THREE.SphereGeometry(50, 16, 16),
-            hand = new THREE.SphereGeometry(8, 8, 8),
-            foot = new THREE.SphereGeometry(16, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+        this.basicSize = 64;
+        var
+            head = new THREE.SphereGeometry(this.basicSize + 5, 16, 16),
+            hand = new THREE.SphereGeometry(this.basicSize/4, 8, 8),
+            foot = new THREE.SphereGeometry(this.basicSize/4, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2),
         // Set the material, the "skin"
             material = new THREE.MeshLambertMaterial(args);
         // Set the character modelisation object
         this.mesh = new THREE.Object3D();
-        this.mesh.position.y = 48;
         // Set and add its head
         this.head = new THREE.Mesh(head, material);
-        this.head.position.y = 0;
+        this.head.position.y = (1/4 * this.basicSize + 4);
         this.mesh.add(this.head);
         // Set and add its hands
         this.hands = {
             left: new THREE.Mesh(hand, material),
             right: new THREE.Mesh(hand, material)
         };
-        this.hands.left.position.x = -54;
-        this.hands.left.position.y = -8;
-        this.hands.right.position.x = 54;
-        this.hands.right.position.y = -8;
+        this.hands.left.position.x = -64 - 10;
+        this.hands.left.position.y = this.basicSize/2 - 10;
+        this.hands.right.position.x = 64 + 10;
+        this.hands.right.position.y = this.basicSize/2 - 10;
         this.mesh.add(this.hands.left);
         this.mesh.add(this.hands.right);
         // Set and add its feet
@@ -34,10 +35,10 @@ var Enemy = Class.extend({
             left: new THREE.Mesh(foot, material),
             right: new THREE.Mesh(foot, material)
         };
-        this.feet.left.position.x = -20;
+        this.feet.left.position.x = -64 + 20;
         this.feet.left.position.y = -48;
         this.feet.left.rotation.y = Math.PI / 4;
-        this.feet.right.position.x = 20;
+        this.feet.right.position.x = 64 - 20;
         this.feet.right.position.y = -48;
         this.feet.right.rotation.y = Math.PI / 4;
         this.mesh.add(this.feet.left);
@@ -56,8 +57,6 @@ var Enemy = Class.extend({
             new THREE.Vector3(-1, 0, 0),
             new THREE.Vector3(-1, 0, 1)
         ];
-
-        this.mesh.position.setY(7);
 
         this.alive = true;
         this.lookDirection = new THREE.Vector3(0, 0, 1);
@@ -79,17 +78,19 @@ var Enemy = Class.extend({
         var currIJ = this.getCubeposition();
         var isItColliding = this.isColliding();
         if(this.alive && !this.isOverTheWater()) {
-            // define direction to go
-            if (!this.gotPushed && (!isItColliding && (this.isPlayerNear()))) {
+            // define direction to go:
+            // toward player
+            if (!this.gotPushed && (!isItColliding && this.isPlayerNear())){
                 this.defineDirectionTowardPlayer();
             }
-            else if(isItColliding){
-                this.defineNonCollidingRandomDirectionToGo();
-            }
+            // random patrol
             else if ((this.positionToGo == undefined) ||
                 (currIJ.i == this.positionToGo.i && currIJ.j == this.positionToGo.j)) { // only change direction if enemy got to where he was heading
                 this.gotPushed = false;
                 this.defineRandomDirectionToGo();
+            }
+            else if(isItColliding){
+                this.defineNonCollidingRandomDirectionToGo();
             }
 
             switch (this.directionToGo) {
@@ -141,7 +142,7 @@ var Enemy = Class.extend({
             // Test if we intersect with any obstacle mesh
             collisions = this.caster3.intersectObjects(obstacles);
             // And disable that direction if we do
-            if (collisions.length > 0 && collisions[0].distance <= 50) {
+            if (collisions.length > 0 && collisions[0].distance <= this.basicSize + 10) {
                 return true;
             }
         }
@@ -152,21 +153,40 @@ var Enemy = Class.extend({
         var currIJ = this.getCubeposition();
         var iDelta = playerPosition.i - currIJ.i;
         var jDelta = playerPosition.j - currIJ.j;
-        if(iDelta > 0 && this.isDirectionValidToGo(currIJ.i + 1, currIJ.j)){
-            this.positionToGo = {i: currIJ.i + 1, j: currIJ.j};
-            this.directionToGo = "N";
+        var random = Math.floor(Math.random() * 2);
+        var loopCount = 0;
+        var directionIsInvalid = true;
+
+        while(directionIsInvalid) {
+            if(random == 1){
+                if (iDelta > 0 && this.isDirectionValidToGo(currIJ.i + 1, currIJ.j)) {
+                    this.positionToGo = {i: currIJ.i + 1, j: currIJ.j};
+                    this.directionToGo = "N";
+                }
+                else if (iDelta < 0 && this.isDirectionValidToGo(currIJ.i - 1, currIJ.j)) {
+                    this.positionToGo = {i: currIJ.i - 1, j: currIJ.j};
+                    this.directionToGo = "S";
+                }
+            }
+            else {
+                if (jDelta > 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j + 1)) {
+                    this.positionToGo = {i: currIJ.i, j: currIJ.j + 1};
+                    this.directionToGo = "W";
+                }
+                else if (jDelta < 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j - 1)) {
+                    this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
+                    this.directionToGo = "E";
+                }
+            }
+            loopCount++;
+            if(loopCount > 256){
+                break;
+            }
+
         }
-        else if(iDelta < 0 && this.isDirectionValidToGo(currIJ.i - 1, currIJ.j)){
-            this.positionToGo = {i: currIJ.i - 1, j: currIJ.j};
-            this.directionToGo = "S";
-        }
-        else if(jDelta > 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j + 1)){
-            this.positionToGo = {i: currIJ.i, j: currIJ.j + 1};
-            this.directionToGo = "W";
-        }
-        else if(jDelta < 0 && this.isDirectionValidToGo(currIJ.i, currIJ.j -1)){
-            this.positionToGo = {i: currIJ.i, j: currIJ.j - 1};
-            this.directionToGo = "E";
+        if (directionIsInvalid == true) {
+            console.log(iDelta, jDelta);
+            console.log("bug is on");
         }
     },
     defineRandomDirectionToGo: function () {
@@ -270,11 +290,10 @@ var Enemy = Class.extend({
     isDirectionValidToGo: function(i, j){
         var level = basicScene.world.level;
         var participants = basicScene.world.participants;
-        var obstacles = basicScene.world.getObstacles();
-
         if (
             (i > 0 && i < 19 && j > 0 && j < 19) &&
             (level[i][j] == 1 || level[i][j] == 2 || level[i][j] == 3) &&
+            // (level[i][j] != 0) &&
             (participants[i][j] != 6) &&
             (participants[i][j] != 4)
         ) {

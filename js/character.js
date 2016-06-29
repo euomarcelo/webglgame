@@ -2,8 +2,9 @@ var Character = Class.extend({
     // Class constructor
     init: function (args) {
         'use strict';
+        this.basicSize = 32;
         // Set the different geometries composing the humanoid
-        var head = new THREE.SphereGeometry(32, 16, 16),
+        var head = new THREE.SphereGeometry(this.basicSize, 16, 16),
             hand = new THREE.SphereGeometry(8, 8, 8),
             foot = new THREE.SphereGeometry(16, 4, 8, 0, Math.PI * 2, 0, Math.PI / 2),
             nose = new THREE.SphereGeometry(4, 8, 8),
@@ -241,7 +242,7 @@ var Character = Class.extend({
         'use strict';
         var collisions,
         // Maximum distance from the origin before we consider collision
-            distance = 32,
+            distance = this.basicSize,
         // Get the obstacles array from our world
             obstacles = basicScene.world.getObstacles(),
             raysFront = [], raysBack = [];
@@ -287,23 +288,33 @@ var Character = Class.extend({
     },
     collisionWithEnemies: function(){
         'use strict';
-        var enemies = basicScene.world.enemies;
+        var enemies = basicScene.world.enemysMeshes;
         var rays = this.rays;
-        for(var i = 0; i < enemies.length; i++){
-            for(var j = 0; j < this.rays.length; j++){
-                this.caster.set(enemies[i].mesh.position, rays[j]);
-                var collisions = this.caster.intersectObjects(this.mesh.children);
-                if (collisions.length > 0 && j % 2 == 0 && collisions[0].distance <= 50 ) {
-                    this.alive = false;
-                    basicScene.gameOver();
-                }
-                else if (collisions.length > 0 && j % 2 == 1 && collisions[0].distance <= 140 ) {
-                    console.log("hey");
-                    this.alive = false;
-                    basicScene.gameOver();
-                }
+        // for(var i = 0; i < enemies.length; i++){
+        //     for(var j = 0; j < this.rays.length; j++){
+        //         this.caster.set(enemies[i].position, rays[j]);
+        //         var collisions = this.caster.intersectObjects(this.mesh);
+        //         if (collisions.length > 0 && j % 2 == 0 && collisions[0].distance <= this.basicSize ) {
+        //             this.alive = false;
+        //             basicScene.gameOver();
+        //         }
+        //         else if (collisions.length > 0 && j % 2 == 1 && collisions[0].distance <= this.basicSize + 300 ) {
+        //             console.log("HEY");
+        //             this.alive = false;
+        //             basicScene.gameOver();
+        //         }
+        //     }
+        // }
+
+        for(var j = 0; j < this.rays.length; j++){
+            this.caster.set(this.mesh.position, rays[j]);
+            var collisions = this.caster.intersectObjects(enemies);
+            if (collisions.length > 0 && collisions[0].distance <= this.basicSize ) {
+                this.alive = false;
+                basicScene.gameOver();
             }
         }
+
     },
     // Rotate the character
     rotate: function () {
