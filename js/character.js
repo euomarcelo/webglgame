@@ -67,6 +67,7 @@ var Character = Class.extend({
 
         // flags
         this.alive = true;
+        this.isFalling = false;
 
         this.weaponTime = Math.floor(Date.now() / 1000);
 
@@ -144,6 +145,7 @@ var Character = Class.extend({
 
             if(posToDig !== null){
                 /* position stuff, update indexes */
+                basicScene.sfxs.crack.play();
                 var cube = basicScene.world.floorCubes[posToDig.i][posToDig.j];
                 cube.material = basicScene.world.rachMaterial;  // muda a textura do bloco
                 // cube.material.needsUpdate = true; //BUG?
@@ -230,7 +232,13 @@ var Character = Class.extend({
         collisions = this.caster2.intersectObjects(ground);
 
         if ( !(collisions.length > 0) || (collisions.length > 0 && collisions[0].distance > distance)){
-            if(this.alive && this.mesh.position.y > -300) this.fall();
+            if(this.alive && this.mesh.position.y > -300) {
+                this.fall();
+                if(this.isFalling == false && this.mesh.position.y < 0){
+                    this.isFalling = true;
+                    basicScene.sfxs.fall.play();
+                }
+            }
             else {
                 this.alive = false;
                 basicScene.gameOver();
@@ -289,23 +297,7 @@ var Character = Class.extend({
     collisionWithEnemies: function(){
         'use strict';
         var enemies = basicScene.world.enemysMeshes;
-        var rays = this.rays;
-        // for(var i = 0; i < enemies.length; i++){
-        //     for(var j = 0; j < this.rays.length; j++){
-        //         this.caster.set(enemies[i].position, rays[j]);
-        //         var collisions = this.caster.intersectObjects(this.mesh);
-        //         if (collisions.length > 0 && j % 2 == 0 && collisions[0].distance <= this.basicSize ) {
-        //             this.alive = false;
-        //             basicScene.gameOver();
-        //         }
-        //         else if (collisions.length > 0 && j % 2 == 1 && collisions[0].distance <= this.basicSize + 300 ) {
-        //             console.log("HEY");
-        //             this.alive = false;
-        //             basicScene.gameOver();
-        //         }
-        //     }
-        // }
-
+        var rays = this.rays;        
         for(var j = 0; j < this.rays.length; j++){
             this.caster.set(this.mesh.position, rays[j]);
             var collisions = this.caster.intersectObjects(enemies);
@@ -406,10 +398,12 @@ var Character = Class.extend({
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i + 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 2, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i + 1, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i + 1, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                         }
                     }
@@ -424,10 +418,12 @@ var Character = Class.extend({
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i - 2, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 2, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i - 1, enemyIJ.j)){
                                 enemies[x].pushedTo(enemyIJ.i - 1, enemyIJ.j, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                         }
                     }
@@ -441,10 +437,12 @@ var Character = Class.extend({
                             enemyIJ = enemies[x].getCubeposition();
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 2, direction);
+                                basicScene.sfxs.weapon.play();
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j + 1)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j + 1, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                         }
                     }
@@ -459,10 +457,12 @@ var Character = Class.extend({
                             if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 2)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 2, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                             else if(enemies[x].isDirectionValidToGo(enemyIJ.i, enemyIJ.j - 1)){
                                 enemies[x].pushedTo(enemyIJ.i, enemyIJ.j - 1, direction);
                                 this.weaponTime = Math.floor(Date.now() / 1000);
+                                basicScene.sfxs.weapon.play();
                             }
                         }
                     }

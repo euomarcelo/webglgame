@@ -64,7 +64,7 @@ var Enemy = Class.extend({
         this.caster2 = new THREE.Raycaster();
         this.caster3 = new THREE.Raycaster();
 
-        this.speed = 1.8;
+        this.speed = 1.5;
         this.speedOnCrack = 0.3;
         this.falling = false;
         this.positionToGo;
@@ -183,10 +183,6 @@ var Enemy = Class.extend({
                 break;
             }
 
-        }
-        if (directionIsInvalid == true) {
-            console.log(iDelta, jDelta);
-            console.log("bug is on");
         }
     },
     defineRandomDirectionToGo: function () {
@@ -332,9 +328,13 @@ var Enemy = Class.extend({
             this.alive = false;
             basicScene.world.participants[currIJ.i][currIJ.j] = 0;
             this.falling = true;
+            this.playFallingSound();
             return true;
         }
         else return false;
+    },
+    playFallingSound: function(){
+        basicScene.sfxs.fall.play();
     },
     fall: function(){
         'use strict';

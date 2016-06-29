@@ -270,6 +270,7 @@ var World = Class.extend({
         for (var i = 0; i < 20; i++) {
             for (var j = 0; j < 20; j++) {
                 if(this.floodMatrix[i][j] == color){
+                    basicScene.sfxs.landslide.play();
                     this.level[i][j] = 0;
                     this.floorCubes[i][j].position.setY(-2000);
                     this.floorCubes[i][j].visible = false;

@@ -15,7 +15,16 @@ var BasicScene = Class.extend({
         this.scene.add(this.camera3rdPerson);
         this.cameraTypes = ['3rd', '1st', 'top'];
         this.currentCamera = 2;
-
+        this.sfxs = {
+            'bgm1': $('#bgm1')[0],
+            'bgm2': $('#bgm2')[0],
+            'fall': $('#fall')[0],
+            'gameover': $('#gameover')[0],
+            'landslide' : $('#landslide')[0],
+            'clear': $('#clear')[0],
+            'weapon': $('#weapon')[0],
+            'crack': $('#crack')[0]
+        }
         // LIGHT
         this.light = new THREE.PointLight();
         this.light.position.set(-256, 256, -256);
@@ -45,6 +54,19 @@ var BasicScene = Class.extend({
         this.setControls();
 
         this.levelCleared = false;
+        this.initSound();
+    },
+    initSound: function(){
+        this.sfxs.bgm1.volume = 0.2;
+        this.sfxs.bgm2.volume = 0.2;
+        this.sfxs.gameover.volume = 0.2;
+        this.sfxs.clear.volume = 0.2;
+        this.sfxs.fall.volume = 0.2;
+        this.sfxs.landslide.volume = 0.2;
+        this.sfxs.weapon.volume = 0.2;
+        this.sfxs.crack.volume = 0.2;
+
+        this.sfxs.bgm2.play();
     },
     // Event handlers
     setControls: function () {
@@ -289,6 +311,9 @@ var BasicScene = Class.extend({
     },
     gameWon: function() {
         // console.log("game won");
+        this.sfxs.bgm2.pause();
+        this.sfxs.bgm2.pause();
+        this.sfxs.clear.play();
         $('<div id="message-outter"><div id="message-won"><h1>VITÓRIA!</h1><p>pressione ENTER para jogar de novo</p></div></div>').prependTo("#basic-scene").addClass('message-div');
         jQuery(document).keydown(function (e) {
             if(e.keyCode == 13){
@@ -303,7 +328,9 @@ var BasicScene = Class.extend({
         // message.textContent = "GAME OVER";
         // var object = new THREE.CSS3DObject( message );
         // basicScene.scene.add(object);
-
+        this.sfxs.bgm2.pause();
+        this.sfxs.bgm2.pause();
+        this.sfxs.gameover.play();
         $('<div id="message-outter"><div id="message-gameover"><h1>GAME OVER</h1><p>pressione ENTER para jogar de novo</p></div></div>').prependTo("#basic-scene").addClass('message-div');
         jQuery(document).keydown(function (e) {
             if(e.keyCode == 13){
